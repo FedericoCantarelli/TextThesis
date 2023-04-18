@@ -1,7 +1,7 @@
 \babel@toc {english}{}\relax 
 \contentsline {chapter}{Abstract}{i}{chapter*.2}%
 \contentsline {chapter}{Abstract in lingua italiana}{iii}{chapter*.4}%
-\contentsline {chapter}{Contents\markboth {\MakeUppercase {Contents}}{\MakeUppercase {Contents}}}{v}{chapter*.6}%
+\contentsline {chapter}{Contents\markboth {\MakeUppercase []{Contents}}{\MakeUppercase []{Contents}}}{v}{chapter*.6}%
 \vspace {2em}
 \contentsline {chapter}{\numberline {1}Introduction to Additive Manufacturing}{1}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Additive Manufacturing Process Categories}{2}{section.1.1}%
@@ -28,7 +28,7 @@
 \contentsline {section}{\numberline {2.11}Bibliography and citations}{24}{section.2.11}%
 \contentsline {chapter}{\numberline {3}Conclusions and future developments}{25}{chapter.3}%
 \vspace {2em}
-\contentsline {chapter}{Bibliography\markboth {\MakeUppercase {Bibliography}}{\MakeUppercase {Bibliography}}}{27}{chapter*.32}%
+\contentsline {chapter}{Bibliography\markboth {\MakeUppercase []{Bibliography}}{\MakeUppercase []{Bibliography}}}{27}{chapter*.32}%
 \vspace {2em}
 \contentsline {chapter}{\numberline {A}Appendix A}{31}{appendix.A}%
 \contentsline {chapter}{\numberline {B}Appendix B}{33}{appendix.B}%

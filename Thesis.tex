@@ -74,6 +74,11 @@
 \usepackage[square, numbers, sort&compress]{natbib} % Square brackets, citing references with numbers, citations sorted by appearance in the text and compressed
 \bibliographystyle{unsrtnat} % You may use a different style adapted to your field
 
+
+% PACKAGES FOR CODE
+\usepackage{listings}
+
+
 % OTHER PACKAGES
 \usepackage{pdfpages} % To include a pdf file
 \usepackage{afterpage}
@@ -124,12 +129,12 @@
 \frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
 
 \puttitle{
-	title=Title, % Title of the thesis
+	title=Hot-Spot Detection in Metal PBF Processes: a Systematic Analysis, % Title of the thesis
 	name=Federico Cantarelli, % Author Name and Surname
 	course=Management Engineering - Ingegneria Gestionale, % Study Programme (in Italian)
 	ID  = 992964,  % Student ID number (numero di matricola)
 	advisor= Prof. Bianca Maria Colosimo, % Supervisor name
-	coadvisor={Name Surname, Name Surname}, % Co-Supervisor name, remove this line if there is none
+	coadvisor={Prof. Piercesare Secchi}, % Co-Supervisor name, remove this line if there is none
 	academicyear={2022-23},  % Academic Year
 } % These info will be put into your Title page 
 
@@ -189,18 +194,47 @@
 % NUMBERED CHAPTERS % Regular chapters following
 % --------------------------------------------------------------------------
 
-% Introduction ---------
+% Introduction >>>
 \chapter{Introduction to Additive Manufacturing}
 \label{ch:Introduction}%
 \input{introduction}
-% ---------
+% <<< End of Introduction
 
 
-% Introduction ---------
-\chapter{Powder Bed Fusion Processes and Lattice Structures}
-\label{ch:Metal_AM_and_lattice}%
-\input{lattice_am_metals}
-% ---------
+% PBF Processes >>>
+\chapter{Powder Bed Fusion Processes}
+\label{ch:Metal_AM}%
+\input{pbf_metals}
+% <<< end of PBF processes
+
+
+% Hot Spot Defect >>>
+\chapter{Hot Spot Defects in PBF Processes}
+\label{ch:hotspot}%
+\input{hotspot}
+% <<< end of Hot Spot Defect
+
+% Hot Spot State of the Art >>>
+\chapter{Hot Spot Detection: a State of the Art Research}
+\label{ch:state_ot_the_art}%
+\input{state_of_the_art}
+% <<< end of PBF Hot Spot State of the Art
+
+
+% Proposed method Bagging Voronoi >>>
+\chapter{Bagging Voronoi Clustering Algorithm}
+\label{ch:baggingvoronoi}
+\input{bvc}
+% <<< End of proposed method Bagging Voronoi
+
+
+% Conclusion and future development
+\chapter{Conclusions and future developments}
+\label{ch:conclusions}%
+\input{conclusion}
+% <<< End of conclusion
+
+
 
 
 
@@ -331,33 +365,6 @@ Within the environments \texttt{table} and  \texttt{tabular} you can create very
 \end{table}
 
 
-\subsection{Algorithms}
-\label{subsec:algorithms}
-
-Pseudo-algorithms can be written in \LaTeX{} with the \texttt{algorithm} and \texttt{algorithmic} packages.
-An example is shown in Algorithm~\ref{alg:var}.
-\begin{algorithm}[H]
-    \label{alg:example}
-    \caption{Name of the Algorithm}
-    \label{alg:var}
-    \label{protocol1}
-    \begin{algorithmic}[1]
-    \STATE Initial instructions
-    \FOR{$for-condition$}
-    \STATE{Some instructions}
-    \IF{$if-condition$}
-    \STATE{Some other instructions}
-    \ENDIF
-    \ENDFOR
-    \WHILE{$while-condition$}
-    \STATE{Some further instructions}
-    \ENDWHILE
-    \STATE Final instructions
-    \end{algorithmic}
-\end{algorithm} 
-
-\vspace{5mm}
-
 \section{Theorems, propositions and lists}
 
 \subsection{Theorems}
@@ -405,20 +412,9 @@ https://www.biblio.polimi.it/en/tools/courses-and-tutorials
 \end{verbatim}
 You can also attend the courses which are periodically organized on "Bibliographic citations and bibliography management".
 
-\section{Bibliography and citations}
-Your thesis must contain a suitable Bibliography which lists all the sources consulted on developing the work.
-The list of references is placed at the end of the manuscript after the chapter containing the conclusions.
-We suggest to use the BibTeX package and save the bibliographic references  in the file \verb|Thesis_bibliography.bib|.
-This is indeed a database containing all the information about the references. To cite in your manuscript, use the \verb|\cite{}| command as follows:
-\\
-\textit{Here is how you cite bibliography entries:  or multiple ones at once}.
-\\
-The bibliography and list of references are generated automatically by running BibTeX .
 
-\chapter{Conclusions and future developments}
-\label{ch:conclusions}%
-A final chapter containing the main conclusions of your research/study
-and possible future developments of your work have to be inserted in this chapter.
+
+
 
 %-------------------------------------------------------------------------
 %	BIBLIOGRAPHY
@@ -434,32 +430,19 @@ and possible future developments of your work have to be inserted in this chapte
 \cleardoublepage
 \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
 \appendix
+
+% Appendix A: Research Methodology >>>
 \chapter{Appendix A}
-If you need to include an appendix to support the research in your thesis, you can place it at the end of the manuscript.
-An appendix contains supplementary material (figures, tables, data, codes, mathematical proofs, surveys, \dots)
-which supplement the main results contained in the previous chapters.
+\label{ap:research}
+\input{appendixA}
+% <<< End of Appendix A
 
+% Appendix B: Python Code >>>
 \chapter{Appendix B}
-It may be necessary to include another appendix to better organize the presentation of supplementary material.
+\label{ap:Python}%
+\input{appendixB}
+% <<< End of Appendix B
 
-
-% LIST OF FIGURES
-\listoffigures
-
-% LIST OF TABLES
-\listoftables
-
-% LIST OF SYMBOLS
-% Write out the List of Symbols in this page
-\chapter*{List of Symbols} % You have to include a chapter for your list of symbols (
-\begin{table}[H]
-    \centering
-    \begin{tabular}{lll}
-        \textbf{Variable} & \textbf{Description} & \textbf{SI unit} \\\hline\\[-9px]
-        $\bm{u}$ & solid displacement & m \\[2px]
-        $\bm{u}_f$ & fluid displacement & m \\[2px]
-    \end{tabular}
-\end{table}
 
 % ACKNOWLEDGEMENTS
 \chapter*{Acknowledgements}

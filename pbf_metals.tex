@@ -1,5 +1,7 @@
 \setlength{\tabcolsep}{10pt}
-In this section, we will focus on additive manufacturing for metal lattice structures using a PBF process. In section \ref{sec:pbf_proc}, we will discuss how 3d printers for PBF process with metal materials, while in section \ref{sec:lattice}, we will delve into lattice structures.
+In this section, I will provide a comprehensive overview of powder bed fusion (PBF) processes in metal additive manufacturing. In section \ref{sec:pbf_proc}, we will discuss how 3d printers for metal PBF work, in section \ref{sec:metalpowders} we will discuss about the powders used in those processes, while in section \ref{sec:metalsintering}, we will delve into the sintering of metal powders into the finished product.
+
+% Powder Bed Fusion Processes >>>
 \section{Powder Bed Fusion Processes}\label{sec:pbf_proc}
 As we have already discussed in section \ref{sec:AMproc}, powder bed fusion processes can be further divided into laser powder bed fusion also called selective laser sintering (SLS) or electron beam powder bed fusion also called electron beam melting (EBM). Despite the fact that the two technologies are based on two different ideas and some differences in components between 3D printers, the two processes share several common elements and points. Since the thesis concerns lattice structures printed in metal, in this section we will delve into PBF technologies suitable for metallic materials. 
 \begin{figure}[H]
@@ -25,7 +27,7 @@ Laser equipment has the capability to generate powers in the range of thousands 
     \caption[Galvanometric system.]{Dual-axis galvanometric system.}
     \label{fig:galvano}
 \end{figure}
-The galvanometric system, fig. \ref{fig:galvano}, system consists primarily of two mirrors rotating along their axis, enabling the laser beam to be directed, and a series of f-theta lenses that facilitate rapid laser movement and precise focusing of laser beam. After completing the printing process, it is necessary to allow the object to cool down. Although supports are not always necessary in PBF processes as the powder gives support to the object itself, they may need to be inserted to ensure uniform heat transmission during both the printing and cooling processes. Once the object has cooled down, any excess powder can be removed. The excess powder can be recycled and reused after undergoing some preliminary processing and conformity controls. Finally, if required, post-processing operations can be carried out, such as removing any supports, surface finishing, and annealing. This is especially important if the cooling process inside the chamber has created an undesired microstructure in the final cooling part.\\
+The galvanometer system, fig. \ref{fig:galvano}, system consists primarily of two mirrors rotating along their axis, enabling the laser beam to be directed, and a series of f-theta lenses that facilitate rapid laser movement and precise focusing of laser beam. After completing the printing process, it is necessary to allow the object to cool down. Although supports are not always necessary in PBF processes as the powder gives support to the object itself, they may need to be inserted to ensure uniform heat transmission during both the printing and cooling processes. Once the object has cooled down, any excess powder can be removed. The excess powder can be recycled and reused after undergoing some preliminary processing and conformity controls. Finally, if required, post-processing operations can be carried out, such as removing any supports, surface finishing, and annealing. This is especially important if the cooling process inside the chamber has created an undesired micro structure in the final cooling part.\\
 In EBM printers, the process is fundamentally the same as in laser printers, with metal powder selectively fused from a tray. However, there are several significant differences. Firstly, the energy source is not a laser (i.e., a beam of photons) but rather an electron beam. Secondly, the preheating stage is not accomplished through the use of an electric resistor, but instead through the use of the electron beam itself. But how does an electron beam function? To produce an electron beam, an electric current is passed through a tungsten filament. The resulting electron beam is then directed through a Wehnelt cylinder, which, when negatively or positively charged, respectively blocks or allows the passage of electrons.
 
 \begin{figure}[H]
@@ -43,10 +45,15 @@ A diagram of the electron gun beam's structure can be seen in fig. \ref{fig:elec
     \label{fig:ebm_printer}
 \end{figure}
  There are also differences in the materials used for printing. In EBM printing, usually metal powder size is slightly larger than the powder used in laser printing, with a particle size of approximately \SIrange[range-phrase = --]{40}{105}{\micro\meter} against the \SIrange[range-phrase = --]{15}{45}{\micro\meter} in SLS processes. This is needed in order to prevent excessive "smoke effect". Furthermore, metal powder must be made of metals that exhibit good electrical conductivity. Indeed, in EBM also highly reflective metals can be used, because unlike photons, electrons are not repelled by mirrored surfaces since they penetrate the material thanks to the material's own electrical conductivity.
-\subsection{Metal Powders Sintering}
-%%%%%%
-%%%%%%
-\section{Metal Powders for AM} \label{sec:metalpowders}
+
+% <<< End of Powder Bed Fusion Processes
+
+%%%%%
+%%%%%
+
+% Metal Powders >>>
+\section{Metal Powders for AM} 
+\label{sec:metalpowders}
 As we have seen in the section \ref{sec:pbf_proc}, PBF processes require metal powder for the process. Various metallic materials can be transformed into powders suitable for use in additive manufacturing processes, and can be applied in different sectors according to their mechanical properties. The table \ref{table:materialAMmetal} presents some examples of metallic materials that can be used for this purpose. 
 
 \begin{table}[H]
@@ -138,8 +145,29 @@ In \emph{rotating electrode process}, a consumable metal electrode is rotated at
     \caption[Powders from atomization processes]{Micro-particles obtained by water atomization (a), gas atomization (b), plasma atomization (c) and rotating electode process (d).}
     \label{fig:powders}
 \end{figure}
-%%%%%%
-%%%%%%
+% <<< End of Materials
+
+%%%%%
+%%%%%
+
+% Metal Sintering >>>
+\section{Metal Sintering}
+\label{sec:metalsintering}
+Once again, the metal fusion process in the case of SLS and in the case of EBM have some similarities, especially for the fundamental concept of selectively melting the metal by supplying energy from an external source. However, they also have some significant differences, coming from the fact 
+% <<< End of Metal Sintering
+
+%%%%%
+%%%%%
+
+% Applications of PBF Metal Additive Manufacturing >>>
+\section{Applications of PBF Metal Additive Manufacturing}
+\label{sec:examplesPBF}
+% <<< End of Applications of PBF Metal Additive Manufacturing
+
+%%%%%
+%%%%%
+
+% Lattice >>>
 \section{Lattice Structure and Cellular Material} \label{sec:lattice}
 According to ISO/ASTM 52900 \cite{international_standard_organization_isoastm_2015}, lattice structure are "three dimensional geometric arrangement composed of connective links between vertices (points) creating a functional structure". So, lattice structures are three-dimensional structures made up of different connected single elements called "cells" that can have different shapes, designed to meet the needs of the final object. These objects are distinguished by empty spaces within the structure. These structures can only be obtained thanks to layer-wise additive manufacturing technologies, since they allow us to design and to manufacture objects with complex designs and intricated parts. In recent years, the biomimicry technique has also spread to additive manufacturing, and lattice structures are the natural manifestation of this technique. Biomimicry is a set of design techniques that allow us to take inspiration from nature to find solutions to engineering problems or to design functional components that can be used in engineering applications \cite{pathak_biomimicry_2019, du_plessis_beautiful_2019}. Nature, over the past 3.8 billions years, has been able to find the most efficient way to develop functional solutions to evolutionary problems characterized by immovable constraints, whether they are determined by the organism itself or by external factors. For example, think of the wings of dragonflies in fig. \ref{fig:dragonfly}, a lightweight, completely transparent structure that allows flight, allowing them to fly unnoticed by predators. 
 \begin{figure}[H]
@@ -194,7 +222,4 @@ Just think that the aluminum cube in fig. \ref{fig:beelattice} was printed using
     \label{fig:cellstruct}
 \end{figure}
 Lattice structures are versatile and can be effectively applied in various engineering fields to address multiple challenges. Specifically, they are commonly used in four main areas \cite{bhate_classification_2019}: structural engineering for vibration control, strain isolation, and weight reduction purposes; thermal engineering for applications such as heat exchangers, flame arresters, or heat shields; fluid dynamics engineering, where lattice structures can serve as catalyst carriers or packaging; and in biological engineering, where they can be leveraged for bone integration in prosthetic and cell growth. Due to their unique properties, lattice structures are an attractive choice for engineers and designers seeking innovative solutions to complex problems across a wide range of industries, especially in the automotive, aerospace, energy and commodities, and medical industries.
-\subsection{Successful Case Studies for Lattice Structures} \label{subsec:casestudieslattice}
-In this section, we will discuss some relevant case studies of successful applications of lattice structures. We will not focus on a single industry but rather analyze applications in various fields.
-\section{Defects in 3d-printed metal objects}
-\subsection{Classical indicators for lattice structures quality}
+% <<< End of Lattice

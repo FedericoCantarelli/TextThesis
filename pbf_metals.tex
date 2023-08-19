@@ -150,11 +150,57 @@ In \emph{rotating electrode process}, a consumable metal electrode is rotated at
 %%%%%
 %%%%%
 
-% Metal Sintering >>>
-\section{Metal Sintering}
-\label{sec:metalsintering}
-Once again, the metal fusion process in the case of SLS and in the case of EBM have some similarities, especially for the fundamental concept of selectively melting the metal by supplying energy from an external source. However, they also have some significant differences, coming from the fact 
-% <<< End of Metal Sintering
+% Energy matter interactions >>>
+\section{Energy - Matter Interactions}
+\label{sec:matterint}
+Once again, the metal fusion process in the case of SLS and in the case of EBM have some similarities, especially for the fundamental concept of selectively melting the metal by supplying energy from an external source. However, they also have some significant differences, coming from the fact that in SLS there is the interaction between a photon  and matter, while in EBM there is the interaction between electrons and matter. I will discuss first metal sintering in SLS in section \ref{subsec:sintering} and then how electrons interact with metal powder in section \ref{subsec:ebminter}.
+
+\subsection{Metal Sintering in SLS}
+\label{subsec:sintering}
+
+
+\subsection{Electrons-Matter Interaction}
+\label{subsec:ebminter}
+According to Schultz \cite{schultz_h_electron_1994}, while the physical characterization of electron beams has been recognized since the 1960s, the microscopic processes are such that they remain without a comprehensive quantitative explanation also nowadays. However, a comprehensive explanation of electrons properties and their interaction with matter was given by Krumeich in \cite{krumeich_properties_nodate}.
+
+\subsubsection{What is an Electron?}
+\label{sssec:electron}
+An electron is a fundamental subatomic particle that carries a negative electric charge and it's one of the primary constituents of atoms. As explained in Section \ref{cane} The electron beam in EBM is made of electrons generated through the thermionic effect with a metallic filament, typically tungsten or tantalum. At the cathode, an accelerating voltage $V$ is applied, causing electrons acceleration till velocity $v$. As explained in \cite{krumeich_properties_nodate}, we can write the equation for energy kinetic energy associated to an electron as 
+\begin{equation}
+    \label{eq:energyelectron}
+    E  = e\cdot V = \frac{1}{2}mv^2
+\end{equation}
+Given the fact that electron mass is \num{9.109e-31} \unit{Kg}, electron charge is \num{-1.602e-19} \unit{C} and that a common voltage for EBM application is \num{60} \unit{KV}, from \ref{eq:energyelectron} we find that electron velocity is
+\begin{equation}
+\label{eq:velocityelectron}
+v=\frac{\sqrt{2\cdot e\cdot V}}{m}
+\end{equation}
+which is approximately \num{1.453e8} \unit{m/s} (half the speed of light more or less. Recalling the dualism wave-particle of the electron, we can use De Broglie equation \cite{krumeich_properties_nodate} to compute the wavelength of the electron beam
+\begin{equation}
+\label{eq:wavelength}
+    \lambda = \frac{h}{\sqrt{2\cdot m \cdot e \cdot V}}
+\end{equation}
+where $h=$\num{6.62607015e-34} \unit{J.s} is Planck constant. In instances where the voltage is higher than \num{60} \unit{KV} (around \num{300} \unit{KV}) , it would be necessary to include a term that accounts for the relativistic nature of mass in \ref{eq:wavelength}, as the electron's speed would approach the speed of light.
+
+
+\subsubsection{Magnetic Lenses in EBM}
+\label{sssec:magneticlens}
+As explained in Section \ref{cane}, the beam is controlled by electromagnetic lenses controlling the beam, adjusting the spot shape (astigmatism coil), the size (focus coil) and spot deflection (deflection coil).
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.9]{Images/Magnetic_lens.jpg}
+    \caption[Magnetic lens.]{Forces schema when an electron beam pass through magnetic lens. From \cite{various_magnetic_2023}.}
+    \label{fig:magneticlens}
+\end{figure}
+The force $\mathbf{F}$ which an electron of charge $-e$ experiences when traveling with a velocity $\mathbf{v}$ due to a magnetic field $\mathbf{B}$ is given by Lorentz's law:
+\begin{equation}
+    \mathbf{F} = -e\cdot \left( \mathbf{v} \times \mathbf{B}\right)
+\end{equation}
+We can decompose the field into a radial component $\mathbf{B}_R$ and into an axial component $\mathbf{B}_L$. The initial direction of the electron is parallel to the axis, thus it is subjected to the radial component $\mathbf{B}_R$, which is responsible for an orthogonal force to $\mathbf{v}$: electrons start rotating. When they start rotating, they are subject to the axial field of the magnetic field too, which result in a reducing radius spiraling trajectory that converge the beam towards the target.
+
+\subsubsection{Electrons Interaction}
+\label{sssec:electroninteractions}
+% <<< End of Energy Matter Interactions
 
 %%%%%
 %%%%%

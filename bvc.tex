@@ -69,12 +69,12 @@ Bagging Voronoi Clustering Algorithm is an algorithm presented in Secchi et al. 
     \label{eq:voronoicell}
     R_k=\{x\in X \mid d(x, P_k)\leq d(x, P_j),\forall j\neq k\}
 \end{equation}
-The Voronoi tesselation is simply the collection of all the cells in the space.
-An example of a Voronoi tesselation can be seen in Fig. \ref{fig:voronoi}.
+The Voronoi tessellation is simply the collection of all the cells in the space.
+An example of a Voronoi tessellation can be seen in Fig. \ref{fig:voronoi}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{Images/A-set-of-atoms-the-associated-Voronoi-tessellation-solid-lines-and-the-Delaunay.png}
-    \caption[Voronoi tesselation.]{Example of Voronoi tessellation with highlighted nuclei.}
+    \caption[Voronoi tessellation.]{Example of Voronoi tessellation with highlighted nuclei.}
     \label{fig:voronoi}
 \end{figure}
 
@@ -82,16 +82,25 @@ An example of a Voronoi tesselation can be seen in Fig. \ref{fig:voronoi}.
 \subsection{Algorithm Steps}
 \label{subsec:algsteps}
 In this section, I will provide a detailed description of algorithm steps.
-Suppose a latent field of labels $\Lambda_0:\mathcal{S}_0 \rightarrow \{1,\dots,L\}$.
+Suppose a latent field of labels $\Lambda_0:\mathcal{S}_0 \rightarrow \{1,\dots,L\}$ which is defined on the lattice $\mathcal{S}_0$. $\Lambda_0(\mathbf{x})$ is the true unknown label associated to the site $\mathbf{x}\in\mathcal{S}_0$, where $\mathcal{S}_0 \subset \mathcal{S}$ and $\mathcal{S}$ is a measurable subset of $\mathbb{R}^d$. In addition, suppose that a functional datum is observed in each site $\mathbf{x}\in\mathcal{S_0}$.
+\paragraph{Step 1: Voronoi Tessellation} Select a set of points $\mathbf{x}\in\mathcal{S}$ as nuclei for the Voronoi tessellation. Thus, let $\Phi_n=\{\mathbf{Z}_1, \dots, \mathbf{Z}_n\}$ be a set of $n$ points in $\mathcal{S}$ sampled from a proper distribution $F$ defined on S: this will be the set of nuclei of the Voronoi tessellation. For each $\mathbf{Z}_i\in\Phi_n$ define the polyhedron
+\begin{equation}
+    \label{eq:polyedron}
+    V\left(\mathbf{Z}_i \mid \Phi_n\right)=\{\mathbf{x}\in\mathcal{S} : d\left(\mathbf{x},\mathbf{Z}_i\right) \leq d\left(\mathbf{x}, \mathbf{Z}_j\right), \quad \text{for all}\quad \mathbf{Z}_j \in \Phi_n, i\neq j\}
+\end{equation}
+to be the closest Voronoi cell with nuclues $Z_j$ for the Voronoi tessellation induced by $\Phi_n$.
+\paragraph{Step 2: Functional Local Representatives} Consider T, a bounded interval of $\mathbb{R}$ and a realization $f_{\mathbf{x}}:T\rightarrow \mathbb{R}$ of a functional random variable is observed in each site $\mathbf{x}$ of the lattice $S_0$. From the previous step, we got a Voronoi tessellation of the lattice $S_0$ which define random neighborhoods. For each element $V_i$ of the Voronoi tessellation, we sum up the information contained in the sub-sample $\{f_{\mathbf{x}}\}_{\mathbf{x} \in V_i}$ by estimating a functional local representative through a method that exploits spatial dependence of neighboring data. As example, the authors suggest to use weighted mean with a Gaussian kernel, but we can use any local representative we want. For $i=1, \dots, n$ the functional local representative $g_i$ aforementioned is defined as
+\begin{equation}
+    \label{eq:gaussianmean}
+    g_i(t)=\frac{\sum_{\mathbf{x}\in V_i}w^i_{\mathbf{x}}\cdot f_{\mathbf{x}}(t)}{\sum_{\mathbf{x}\in V_i}w^i_{\mathbf{x}}}
+\end{equation}
+where $w_{\mathbf{x}}^i$ is a Gaussian weight centered in $Z_i$ and decreasing with respect to $d\left(\mathbf{x}, \mathbf{Z}_i\right)$. Intuitively we assume that spatial dependence between two sites decreases when the distance between them increases. The kernel covariance matrix is $\sigma^2\mathbb{I}_2$, where $\sigma=d_{max}/d_{min}$, being $d_{max}$ and $d_{min}$ the maximum and minimum distance between two nuclei of the tessellation, respectively. This choice connects $\sigma$ to the mean dimension of the tessellation element via an estimator of the elements mean diameter. The choice of $n$, which sets the tessellation dimension and thus the number of local representatives to be computed, has great influence on the algorithm behavior: in general, we have to find an optimal $n$ such that finds a good compromise between variance and bias.
 
-\paragraph{Step 1: Voronoi Tessellation}
+\paragraph{Step 3: Dimensional Reduction and Clustering} To obtain the label for each site, we then perform k-mean clustering on the sample of the $p$-vectors of the scores $\{\mathbf{g}_1, \dots, \mathbf{g}_n\}$. Repeat steps 1-3 $B$ times, where $B$ is arbitrary chosen. 
 
+\paragraph{Step 4: Cluster Matching} The output of the $b$-th replicate of the bootstrap phase of the algorithm is a label assignment for each local representative estimated during the $b$-th run. All sites $\mathbf{x}$ in $V_i^b$ get the same label associated to the function local representative $g_i^b(t)$. To obtain a classification map of the lattice $\mathcal{S}_0$, we consider the frequency distribution of assignment of each site to each of the $K$ clusters along the $B$ replicates. To compute this frequency distribution we need in turn to assume that cluster labels $\{C_1^b, \dots, C_K^b\}$ are coherent along the B replicates. More specifically, we want cluster labels $\{C_1^b, \dots, C_K^b\}$ to be coherent with $\{C_1^m\, \dots, C_K^m\}$, for all $m<b$ and $b\geq2$. This is obtained through cluster matching. Cluster matching is a set of techniques that allow us to keep different clustering algorithm outputs coherent. I will discuss a simple approach based on the use of contingency table. The algorithm looks for the label permutation that minimizes the total sum of the off-diagonal frequencies in the contingency table describing the joint distribution of sites along the classifications at two subsequent replicates. At the end of clustering matching, for each site $\mathbf{x}$ we will have a vector $\pi_{\mathbf{x}}^K=\left(P_1, \dots, P_K\right)$ where each $P_i, \quad i=1,\dots,k$ is the frequency the label $k$ was assigned to the site $\mathbf{x}$. The final label will be the label associated to maximum $P_k$. In other words, we it is a majority voting among the different replicates $b$.
 
-
-
-
-
-To have an overview of the statistical validity of the clustering just performed, we can use \textit{spatial entropy}. This concept is directly derived from the classical notion of entropy. Considering the frequency distribution vector $\boldsymbol{\pi}=(\pi_{\mathbf{x}}^1,\dots,\pi_{\mathbf{x}})^K$ of each site $\mathbf{x} \in \mathcal{S}_0$ to each of the $K$ clusters obtained after the bootstrapping step of the algorithm. The entropy associated to the final classification in the site $\mathbf{x}\in\mathcal{S}_0$ is defined as
+\paragraph{Step 5: Evaluate Output} To have an overview of the statistical validity of the clustering just performed, we can use \textit{spatial entropy}. This concept is directly derived from the classical notion of entropy. Considering the frequency distribution vector $\boldsymbol{\pi}=(\pi_{\mathbf{x}}^1,\dots,\pi_{\mathbf{x}})^K$ of each site $\mathbf{x} \in \mathcal{S}_0$ to each of the $K$ clusters obtained after the bootstrapping step of the algorithm. The entropy associated to the final classification in the site $\mathbf{x}\in\mathcal{S}_0$ is defined as
 \begin{equation}
 \mathbf{\pi}_{\mathbf{x}}=-\sum_{k=1}^K\pi_{\mathbf{x}^k}\cdot \log(\pi_{\mathbf{x}^k})
 \end{equation}
@@ -103,7 +112,7 @@ which assumes the minimum value 0 when there is an $r$ such that $\pi_{\mathbf{x
 From \ref{eq:avgentropy} we can appreciate how the index hsa been normalized to maximum value $\log(K)$ in order to allow comparison over different choices of $K$
 
 \begin{algorithm}[H]
-    \caption{Bagging Voronoi classifiers}
+    \caption{Bagging Voronoi Classifiers}
     \label{alg:bvc}
     \begin{algorithmic}[1]
     \STATE \textbf{Bootstrap:}
@@ -111,7 +120,7 @@ From \ref{eq:avgentropy} we can appreciate how the index hsa been normalized to 
     \FOR{$b:=1$ to $B$}
     \STATE{Randomly generate a set of nuclei $\Phi^b_n=\{\mathbf{Z}_1^b, \dots, \mathbf{Z}_n^b\}$ among the sites in $\mathcal{S}_0$}
     \FOR{$i=1$ to $n$}
-    \STATE $\mathbf{Z}_i^b\sim\mathcal{U}(\mathcal{S}_0)$, where $\mathcal{U}$ is the uniform distribution on the lattice. Obtain a random Voronoi tesselation of $\mathcal{S}_0, \{V(\mathbf{Z}_i^b|\Phi_n^b\}^n_{i=1}$ by assigning each site $\mathbf{x}\in \mathcal{S}_0$ to the nearest nucleus $\mathbf{Z}_i^b$, according to the specified distance $d(\cdot,\cdot).$
+    \STATE $\mathbf{Z}_i^b\sim\mathcal{U}(\mathcal{S}_0)$, where $\mathcal{U}$ is the uniform distribution on the lattice. Obtain a random Voronoi tessellation of $\mathcal{S}_0, \{V(\mathbf{Z}_i^b|\Phi_n^b\}^n_{i=1}$ by assigning each site $\mathbf{x}\in \mathcal{S}_0$ to the nearest nucleus $\mathbf{Z}_i^b$, according to the specified distance $d(\cdot,\cdot).$
     \ENDFOR
     \FOR {$i:=1$ to $n$}
     \STATE Compute the function $g_i^b$, acting as local representative, by summarizing information carried by the functional data associated to sites belonging to the $i$-th element of the tessellation $V(\mathbf{Z}_i^b|\Phi_n^b)$.
@@ -130,7 +139,6 @@ From \ref{eq:avgentropy} we can appreciate how the index hsa been normalized to 
     \end{algorithmic}
 \end{algorithm} 
 
-
 % <<< End of Bagging Voronoi Clustering Algorithm
 
 % Succesful case of the algorithm >>>
@@ -138,5 +146,5 @@ From \ref{eq:avgentropy} we can appreciate how the index hsa been normalized to 
 \label{sec:bcv-cases}
 \textbf{\textcolor{red}{To be completed.}}
 \\
-\textit{Here the examples from \cite{s}}
+\textit{Here the examples from \cite{secchi_analysis_2015}}
 % <<< End of Succesful case of the algorithm

@@ -109,7 +109,12 @@ which assumes the minimum value 0 when there is an $r$ such that $\pi_{\mathbf{x
 \label{eq:avgentropy}
     \eta^K=\frac{\sum_{\textbf{x}\in\mathcal{S}_0}\eta_{\mathbf{x}}^K}{\log(K)\cdot |\mathcal{S}_0|}
 \end{equation}
-From \ref{eq:avgentropy} we can appreciate how the index hsa been normalized to maximum value $\log(K)$ in order to allow comparison over different choices of $K$
+From \ref{eq:avgentropy} we can appreciate how the index hsa been normalized to maximum value $\log(K)$ in order to allow comparison over different choices of $K$. An other possible index for evaluating a classification in the ratio
+\begin{equation}
+    \label{eq:theta}
+    \theta=\frac{tr(B)}{tr(B)+tr(W)}
+\end{equation}
+where $B$ and $W$ are the final between and within cluster sum of squares matrix, respectively. This index can be seen as the percentage of variance explained by splitting the observations in clusters.
 
 \begin{algorithm}[H]
     \caption{Bagging Voronoi Classifiers}
@@ -144,7 +149,41 @@ From \ref{eq:avgentropy} we can appreciate how the index hsa been normalized to 
 % Succesful case of the algorithm >>>
 \section{Successful Case Studies in Clustering Algorithm Application}
 \label{sec:bcv-cases}
-\textbf{\textcolor{red}{To be completed.}}
-\\
-\textit{Here the examples from \cite{secchi_analysis_2015}}
+In this section, we will discuss two examples of how the algorithm outlined in the previous section has been successfully applied in two completely different domains: the clustering of irradiance data performed in \citeauthor{secchi_bagging_2013} \citeyear{secchi_bagging_2013} and the analysis of spatio-temporal mobile phone data performed in \citeauthor{secchi_analysis_2015} \citeyear{secchi_analysis_2015}. The purpose of this section is to address any potential questions or uncertainties the reader may still have regarding the use of the algorithm detailed Section \ref{sec:bvc}.
+
+\subsection{Clustering of Irradiance Data}
+\label{subsec:irradiance}
+Insolation refers to the amount of solar radiation energy captured on a specific surface area over a set duration. Typically, it is denoted as average irradiance in kilowatt-hours per square meter per day (\unit{\kilo\watt.h/\metre^2.day}). Authors focused on direct insolation, which pertains to the solar irradiance measured at a particular location on Earth with a surface facing directly towards the sun's rays, omitting diffuse insolation. Diffuse insolation refers to the solar energy scattered or reflected by atmospheric components overhead. The value of direct insolation is derived from the solar constant minus the atmospheric reductions from absorption and scattering. While the solar constant is influenced by factors like Earth's distance from the sun and solar cycles, the losses are contingent on factors such as the time of day (which affects the light's path through the atmosphere based on the sun's elevation angle), cloud coverage, atmospheric moisture, and other contaminants. Author's goal was to identify areas of the planet which are optimal with respect to the positioning of solar power collectors by considering parameters, which depend on direct insolation. The data available for the analysis consists of vectors in $\mathbb{R}^{12}$ indexed by each site of the lattice. Sites are located on a non-uniform lattice $\mathcal{S}_0=\bigcup_{\lambda \in Z_{\mathbf{1}};\theta \in Z_{\mathbf{2}}}A_{\lambda\theta}$ where $Z_{\mathbf{1}} = \{ -180, -179, \dots, 178, 179\}$ and $Z_{\mathbf{2}} = \{ -66, -65, \dots, 65\}$: each element $A_{\lambda\theta}$ is the portion of the earth surface which is included between the meridians at longitude $\lambda$ and $\lambda + 1$ in degrees, and between the parallels at latitude $\theta$ and $\theta + 1$ in degrees. This lattice is of course non-uniform, and includes 47,520 worldwide non-polar districts. In each site, the 12 measures correspond to the values of the monthly maximum energy deficit with respect to the monthly average. Both the maximum and the average values are computed over the 22 years time period from July 1983 to June 2005. For each site, they obtained a functional datum $Y_{\lambda,\theta}(t)$ by smoothing $\{Y_{\lambda\theta}^1, \dots, Y_{\lambda\theta}^12\}$ with a Gaussian kernel with bandwidth equal to 1.5, where $Y_{\lambda\theta}^\nu$ is the irradiance data for each month. The authors chose to use a Gaussian isotropic kernel to compute the local representatives. They selected the first $p=3$ functional principal components since only with these was the proportion of explained variance greater than 95\%. For classifying the scores of the $n$ representatives, they employed the K-Means algorithm described in Section \ref{subsec:kmeans} with the $L^2$ semi-metric induced by the principal components.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{Images/baggingscreeplot.png}
+    \caption[Result on irradiance data.]{Algorithm performances with irradiance data. On the left, average normalized entropy, on the right the index $\theta$. From \citeauthor{secchi_bagging_2013} \citeyear{secchi_bagging_2013}.}
+    \label{fig:baggingscreeplot}
+\end{figure}
+Subsequently, as with all classical clustering problems, they performed the clustering multiple times in order to obtain the scree-plot shown in Fig. \ref{fig:baggingscreeplot} and to select the optimal number of clusters, $K$. Additionally, with this specific algorithm, it was also necessary to determine the optimal number of nuclei, $n$, for the initial Voronoi tessellation, as detailed in Algorithm \ref{alg:bvc}. To find the scree-plots shown in the above figure, the number of bootstrap replications was set at $b=100$, and the parameters $n$ and $K$ were varied. The optimal choice for these two parameters was made by using average normalized spatial entropy, the index $\theta$, and the normalized spatial entropy map in conjunction. Starting from the scree-plot of average normalized entropy in Fig. \ref{fig:baggingscreeplot}, we can see that for $n=500$, we have two local minima, specifically for $K=3$ and $K=5$. From the above figure, we can observe that the graph of the t-index suggests that the number of clusters $K=6$ appears to be the most reasonable. Indeed, using $K=7$ would not be sensible as it would not enhance the classification obtained. Consequently, the classification should yield good results for $K=5$ and $K=6$. This was also confirmed by the maps of the normalized entropy, shown in Fig. \ref{fig:irrentropy}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{Images/irrentropy.png}
+    \caption[Spatial entropy for irradiance data.]{Normalized spatial entropy maps associated to the classification with K = 5 (left) and K = 6 (right). Colors from red to white correspond to values from 0 to 1; higher values identify areas where classification is more uncertain. From \citeauthor{secchi_bagging_2013} \citeyear{secchi_bagging_2013}.}
+    \label{fig:irrentropy}
+\end{figure}
+
+The final choice $K=5$ was made looking at maps in Fig. \ref{fig:irrentropy}, which tell us that for $K=5$ the classification is more robust, and from the fact that with $K=5$, the algorithm identified different homogeneous macro-areas which seem interpretable in terms of observed phenomenon. In Fig. \ref{fig:resbagging} there are the final cassifications for irradiance data. Now, as mentioned earlier, we can take advantage of the functional nature of the data to derive additional insights that wouldn't be possible with traditional clustering algorithms. For instance, the fact that the red cluster exhibits a non-seasonal pattern that remains consistent throughout the year, or how the green and yellow clusters have opposite seasonal patterns. Lastly, it's noteworthy to observe that spatial entropy is systematically higher near the boundary between two clusters. This is due to the fact that the functional data is spatially dependent, and hence data near the boundaries are more challenging to cluster.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{Images/resbagging.png}
+    \caption[Classification of irradiance data.]{In the top panels, final classification maps obtained via a majority vote on frequencies of assignment, and by setting $K = 5$ (left) or $K = 6$ (right).In the bottom panels, a set of functional local representatives obtained with $n = 500$ in one of the iterations of the algorithm and clustered with $K = 5$ (left) and with $K=6$ (right). From \citeauthor{secchi_bagging_2013} \citeyear{secchi_bagging_2013}.}
+    \label{fig:resbagging}
+\end{figure}
+
+
+
+
+
+
+\subsection{Analysis of Spatio-Temporal Mobile Phone Data in Milan}
+\label{subsec:mobilephonemilan}
 % <<< End of Succesful case of the algorithm

@@ -118,20 +118,20 @@
 			{{\color{bluepoli} \singlespacing \huge \bfseries \thesistitle \par}}	
 			\vspace{1.5cm}
 			{\color{bluepoli} \bfseries \large{\textsc{Tesi di Laurea Magistrale in\\ \course}}\par}
-			\vspace{1.5 cm}
+			\vspace{1 cm}
 			{\color{black} \Large {Author:} \bfseries{\name}}
 			\end{minipage}
 			\\
 			\vspace*{\fill}
-			\\
+			\\[2.2ex]
 			\begin{minipage}{0.85\textwidth}
 			\normalsize{
 			Student ID: {\ID}
-			\\
+			\\[2.2ex]
 			Advisor: {\advisor}
-			\\
+			\\[2.2ex]
 			Co-advisors: {\coadvisor}
-			\\
+			\\[2.2ex]
 			Academic Year: {\academicyear}
 			}
 			\end{minipage}

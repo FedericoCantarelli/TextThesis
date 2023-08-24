@@ -63,6 +63,9 @@
 \usepackage{tabularx}
 \usepackage{longtable} % Tables that can span several pages
 \usepackage{colortbl}
+\usepackage{blindtext}
+\usepackage{booktabs}
+\usepackage{makecell}
 
 % PACKAGES FOR ALGORITHMS (PSEUDO-CODE)
 \usepackage{algorithm}
@@ -84,6 +87,8 @@
 \usepackage{afterpage}
 \usepackage{lipsum} % DUMMY PACKAGE
 \usepackage{fancyhdr} % For the headers
+\usepackage{tcolorbox}
+\usepackage[version=4]{mhchem} % Chemical Formula
 \fancyhf{}
 
 % Input of configuration file. Do not change config.tex file unless you really know what you are doing. 
@@ -97,6 +102,32 @@
 \newcommand{\bea}{\begin{eqnarray}} % Shortcut for equation arrays
 \newcommand{\eea}{\end{eqnarray}}
 \newcommand{\e}[1]{\times 10^{#1}}  % Powers of 10 notation
+
+
+% Embedded Code
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
 
 %----------------------------------------------------------------------------
 %	ADD YOUR PACKAGES (be careful of package interaction)
@@ -129,7 +160,7 @@
 \frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
 
 \puttitle{
-	title=Hot-Spot Detection in Metal PBF Processes: a Systematic Analysis, % Title of the thesis
+	title=Spot Detection in Metal PBF Processes: a Systematic Analysis of Literature, % Title of the thesis
 	name=Federico Cantarelli, % Author Name and Surname
 	course=Management Engineering - Ingegneria Gestionale, % Study Programme (in Italian)
 	ID  = 992964,  % Student ID number (numero di matricola)

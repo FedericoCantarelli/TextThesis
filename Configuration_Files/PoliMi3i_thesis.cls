@@ -123,15 +123,15 @@
 			\end{minipage}
 			\\
 			\vspace*{\fill}
-			\\[2.2ex]
+			\\[2ex]
 			\begin{minipage}{0.85\textwidth}
 			\normalsize{
 			Student ID: {\ID}
-			\\[2.2ex]
+			\\[2ex]
 			Advisor: {\advisor}
-			\\[2.2ex]
+			\\[2ex]
 			Co-advisors: {\coadvisor}
-			\\[2.2ex]
+			\\[2ex]
 			Academic Year: {\academicyear}
 			}
 			\end{minipage}

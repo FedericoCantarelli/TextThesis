@@ -1,51 +1,12 @@
-In this section, I will propose an approach for clustering areas within the printing plate with anomalous behaviours. With this approach, we should be able to clustering temperature profiles that exhibit a similar behaviour considering also the distance in the printing plane. This analysis can be done pixel-wise, window-wise or, in the case of a lattice structure, cell-wise. "In general, it can be applied to any functional data referenced by a lattice in $\mathbb{R}$, $\mathbb{R}^2$ or $\mathbb{R}^3$. This algorithm is based on functional data. The analysis of functional data allows us to gain a comprehensive and detailed understanding of the anomalies, which would enable us to discern if there are specific zones on the print plane behaving irregularly and to understand how the hot and cold spots might influence the mechanical properties of the printed part, given the fact that we have a functional knowledge of those phenomena. In Section \ref{sec:fda}, I will provide a brief introduction to functional data analysis, in Section \ref{sec:bvc}, I will provide a detailed explanation of the Bagging Voronoi algorithm proposed by \citeauthor{secchi_bagging_2013} for functional data clustering and, in Section \ref{sec:bcv-cases} I will present three successful case studies of algorithm application.
-
-% Unsupervised classification >>>
-\section{Unsupervised Learning}
-\label{sec:clustering}
-In this Section, I will briefly introduce the concept of unsupervised learning, and specifically clustering. The purpose of this thesis is not to provide a detailed explanation of machine learning algorithms; thus, I will be as concise as possible, giving the reader the essential notions to understand the algorithm described later, without overwhelming her or him. 
-Before delving into the specifics of clustering, let's examine the distinction between unsupervised and supervised learning. \textit{Supervised learning} is a machine learning approach relying on labeled datasets. These datasets are designed to train or "supervise" algorithms to classify data (classification algorithm) or somehow predict outcomes (regression). The model can measure its accuracy and learn over time using labeled inputs and correcting outputs. \textit{Unsupervised learning} uses machine learning algorithms to analyze and cluster unlabeled data sets. These algorithms discover hidden patterns in data without the need for an a prioti human classification. Indeed, unsupervised learning is also defined as "learning without a teacher" in \citeauthor{tibshirani_elements_2008} (2008). So, the main difference between supervised and unsupervised learning is the input data: in former case, data is labeled, while in the latter case is not. Clustering is an unsupervised learning technique.
-The aim of all \textit{clustering} algorithms is to organize a collection of entities into subsets or "clusters" wherein elements within a cluster are as similar as possible, whereas data in different clusters are as dissimilar as possible. So, the goal of clustering is to minimize the within-clusters variance while maximizing the between-clusters variance. But how do we define if two observations in the collection are similar? We have to rely on the concept of distance between the two observations. In Fig. \ref{fig:clustering} there is an example of simulated data in the plane clustered into 3 clusters using the K-Means algorithm (that will be discussed later).
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{Images/clustering.png}
-    \caption[Example of clustering.]{Simulated data clustered into 3 classes. Adapted from \cite{tibshirani_elements_2008}.}
-    \label{fig:clustering}
-\end{figure}
-There are several different clustering algorithms that can be divided into two main groups, as in \cite{james_introduction_2021}: K-Means clustering and hierarchical clustering. In \textit{K-Means clustering}, we try to divide observation into a pre-specified number of clusters. On the other hand, in \textit{hierarchical clustering}, we do not specify the number of clusters in advance, but we rely on the dendrogram, a tree-like visual representation of the observations, that allows us to visualize all the clustering steps. We can then "cut" the dendrogram in order to select the most appropriate number of cluster to us.  As we will see in Section \ref{sec:bvc}, the number $K$ of clusters is an input of the algorithm, making hierarchical clustering not suitable for our purposes. In \ref{subsec:kmeans}, I will describe the K-Means algorithm, the algorithm used in Appendix \ref{ap:Python}. But before delving into the algorithm's description, I also want to explain the concept of \textit{bagging} for clustering. It is based on the concept of bootstrapping. Bootstrapping is a resampling technique that helps in finding more reliable results from a clustering algorithm. In the algorithm, we will perform multiple clustering "rounds" in order to find a frequency distribution of the belongings of the observation to a specific cluster. The final cluster label for each observation will be the "most probable correct result" by majority voting.
-
-\subsection{K-Means Clustering Algorithm}
-\label{subsec:kmeans}
-We begin by defining some notation for describe the K-Means algorithm. Let $C_1,\dots,C_k$ denotes the sets containing all the indices of the observation in respective the respective cluster. K-Means clustering is a very simple clustering algorithm we can use for complete partitioning a data collection of observations $\mathbf{x}=\left(X_1, \dots, X_p \right)$, described by $p$ features, into $K$ distinct, non-overlapping clusters. This means that:
-\begin{enumerate}
-    \item $C_1 \cup C_2 \cup \dots \cup C_K=\{1,\dots,n\}$. So, each observation belongs to at least one of the $K$ clusters.
-    \item $C_k\cap C_{k'}=0$ for all $k\neq k'$. In other words, there is no observation belonging to more than one cluster.
-\end{enumerate}
-
-Each observation will be assigned to one cluster and one cluster only. In algorithm \ref{alg:kmeans} there is the description of K-Means clustering algorithm.
-\begin{algorithm}
-    \caption{K-Means Clustering}
-    \label{alg:kmeans}
-    \begin{algorithmic}[1]
-    \STATE {Initialize the number of cluster $K$.}
-    \STATE {Randomly assign a number $1,\dots,K$ to each of the observations. These serve as initial cluster assignments for the observations.}
-    \WHILE{clustering assignments is changing}
-    \STATE{For each of the $K$ clusters, compute the cluster centroid. The $k$-th cluster centroid is the vector of the $p$ feature means for the observations in the $k$-th cluster.}
-    \STATE{Assign each observation to the cluster whose centroid is closest (where closest is defined using $L2$ norm).}
-    \ENDWHILE
-    \end{algorithmic}
-\end{algorithm} 
-In Fig. \ref{fig:clustiteration} there is an example of iterations of K-means algorithm.
+As discussed in the previous chapter, most of the solutions found in the literature rely on deep learning models. However, these models have a significant drawback: they are very complex and with a lot of parameters, meaning they excel at predicting the model's output, but are not equally suitable for explaining the phenomenon. Indeed, deep learning model can be seen as black-box model. We can use packages such as Shap, shown in Fig. \ref{fig:shap}, available as a Python package. SHAP (SHapley Additive exPlanations) utilizes game theory principles to explain the outputs of any machine learning model. It bridges the gap between optimal contribution distribution and localized explanations by employing the traditional Shapley values from game theory, along with their associated extensions as described by \citeauthor{}.
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{Images/clustiteration.png}
-    \caption[K-Means clustering iterations.]{The progress of the K-means algorithm with $K=3$ \cite{james_introduction_2021}.}
-    \label{fig:clustiteration}
+    \includegraphics[width=0.7\textwidth]{Images/shap.png}
+    \caption[SHAP python package.]{Example of the SHAP python package \cite{noauthor_shap_nodate}.}
+    \label{fig:shap}
 \end{figure}
-Because the K-means algorithm finds a local rather than a global optimum, the results obtained will depend on the initial (random) cluster assignment of each observation in Step 1 of the algorithm. In our case, as we will see shortly, this will not be an issue because, thanks to bagging clustering, the problem will not arise.
-% <<< End of Unsupervised classification
 
-
+In this section, I will propose an approach for clustering areas within the printing plate with anomalous behaviours. With this approach, we should be able to clustering temperature profiles that exhibit a similar behaviour considering also the distance in the printing plane. This analysis can be done pixel-wise, window-wise or, in the case of a lattice structure, cell-wise. "In general, it can be applied to any functional data referenced by a lattice in $\mathbb{R}$, $\mathbb{R}^2$ or $\mathbb{R}^3$. This algorithm is based on functional data. The analysis of functional data allows us to gain a comprehensive and detailed understanding of the anomalies, which would enable us to discern if there are specific zones on the print plane behaving irregularly and to understand how hot spots might influence the mechanical properties of the printed part, given the fact that we have a functional knowledge of those phenomena. In Section \ref{sec:fda}, I will provide a brief introduction to functional data analysis, in Section \ref{sec:bvc}, I will provide a detailed explanation of the Bagging Voronoi algorithm proposed by \citeauthor{secchi_bagging_2013} for functional data clustering and, in Section \ref{sec:bcv-cases} I will present three successful case studies of algorithm application.
 
 % Functional Data Analysis >>>
 \section{Functional Data Analysis}
@@ -182,7 +143,7 @@ The final choice $K=5$ was made looking at maps in Fig. \ref{fig:irrentropy}, wh
 I think that the parallelism between irradiance ~data~-~planet and temperature ~profiles~-~print ~plate seems straightforward and fairly clear. So, it's reasonable to believe that an application in additive manufacturing could lead to significant advancements..
 \subsection{Analysis of Spatio-Temporal Mobile Phone Data in Milan}
 \label{subsec:mobilephonemilan}
-I have chosen to present this example to illustrate to the reader the flexibility of the previously discussed algorithm. It demonstrates how the method can adapt with different data dimensionality reduction techniques and how a Fourier basis can be employed to represent functional data exhibiting certain seasonality, as is the case with lattice structures in Section. \ref{sec:chaptersumup}.
+I have chosen to present this example to illustrate to the reader the flexibility of the previously discussed algorithm. It demonstrates how the method can adapt with different data dimensionality reduction techniques and how a Fourier basis can be employed to represent functional data exhibiting certain seasonality, as is the case with lattice structures in Section. \ref{subsec:devcell}.
 In \citeauthor{secchi_analysis_2015} \citeyear{secchi_analysis_2015}, authors examined high-dimensional, geo-referenced mobile-phone usage data from Milan's urban area to discern patterns of activity within the city over time. The goal was to identify specific urban zones with similar temporal patterns, which could indicate specific activities or events in those areas. To achieve the goal, they decided to use the algorithm explained in Section \ref{sec:bvc} coupled with treelet analysis (I'll explain what it is in just a moment). 
 The data available for analysis are from Telecom Italia. In this dataset, the metropolitan city of Milan is divided into a uniform lattice $\mathcal{S}_0$ consisting of 97x109 sites. In each site, the average number of mobile phones simultaneously using the network for calling is provided every 15 minutes over a span of 14 days. This quantity is called Erlang and it is defined as
 \begin{equation}
@@ -263,3 +224,6 @@ At the conclusion of step 5 in Fig. \ref{fig:colosimofunctional}, as outlined in
     \label{fig:colosimofunctional}
 \end{figure}
 % <<< End of Succesful case of the algorithm
+
+
+%As we will see in Section \ref{sec:bvc}, the number $K$ of clusters is an input of the algorithm, making hierarchical clustering not suitable for our purposes. But before delving into the algorithm's description, I also want to explain the concept of \textit{bagging} for clustering. It is based on the concept of bootstrapping. Bootstrapping is a resampling technique that helps in finding more reliable results from a clustering algorithm. In the algorithm, we will perform multiple clustering "rounds" in order to find a frequency distribution of the belongings of the observation to a specific cluster. The final cluster label for each observation will be the "most probable correct result" by majority voting.

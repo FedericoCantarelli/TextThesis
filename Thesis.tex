@@ -74,8 +74,17 @@
 % PACKAGES FOR REFERENCES & BIBLIOGRAPHY
 \usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref} % Adds clickable links at references
 \usepackage{cleveref}
+
+% CHECK UNUSED REFERENCE >>>
+%\bibliographystyle{plain} % You may use a different style adapted to your field
+%\usepackage{refcheck}
+%\nocite{*}
+% <<< CHECK UNUSED REFERENCE
+
+% NEL FILE FINALE CI VA QUESTO >>>
 \usepackage[square, numbers, sort&compress]{natbib} % Square brackets, citing references with numbers, citations sorted by appearance in the text and compressed
 \bibliographystyle{unsrtnat} % You may use a different style adapted to your field
+% <<< NEL FILE FINALE CI VA QUESTO
 
 
 % PACKAGES FOR CODE
@@ -108,7 +117,7 @@
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{backcolour}{rgb}{1,1,1}
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},   
     commentstyle=\color{codegreen},
@@ -135,6 +144,17 @@
 \usepackage{siunitx}
 
 
+%----------------------------------------------------------------------------
+%	Watermark
+%----------------------------------------------------------------------------
+\usepackage{background}
+\backgroundsetup{
+    scale=8,
+    angle = 45,
+    color=black!20,
+    position=current page.center,
+    contents={}
+}
 
 %----------------------------------------------------------------------------
 %	ADD YOUR DEFINITIONS AND COMMANDS (be careful of existing commands)
@@ -160,7 +180,7 @@
 \frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
 
 \puttitle{
-	title=Hot-Spot Detection in Metal PBF Processes: a Systematic Analysis of Literature, % Title of the thesis
+	title=Hot-Spot Detection Using Machine Learning in Metal PBF Processes: a Systematic Analysis of Literature, % Title of the thesis
 	name=Federico Cantarelli, % Author Name and Surname
 	course=Management Engineering - Ingegneria Gestionale, % Study Programme (in Italian)
 	ID  = 992964,  % Student ID number (numero di matricola)
@@ -189,14 +209,23 @@
 
 % ACKNOWLEDGEMENTS
 \chapter*{Ringraziamenti}
+\backgroundsetup{contents={DRAFT}}
 \input{ringraziamenti}
+\backgroundsetup{contents={}}
+
 
 % ABSTRACT IN ENGLISH
 \chapter*{Abstract}
+\backgroundsetup{contents={DRAFT}}
 \input{abstract_en}
+\backgroundsetup{contents={}}
+
 % ABSTRACT IN ITALIAN
 \chapter*{Sommario}
 \input{abstract_ita}
+\backgroundsetup{contents={DRAFT}}
+\backgroundsetup{contents={}}
+
 
 %----------------------------------------------------------------------------
 %	LIST OF CONTENTS/FIGURES/TABLES/SYMBOLS
@@ -220,43 +249,63 @@
 % --------------------------------------------------------------------------
 
 % Introduction >>>
+
 \chapter{Introduction}
 \label{ch:Introduction}%
+%\backgroundsetup{contents={DRAFT}}
 \input{introduction}
+\backgroundsetup{contents={}}
 % <<< End of Introduction
 
+%%%%%
+%%%%%
 
 % PBF Processes >>>
 \chapter{Powder Bed Fusion Processes}
-\label{ch:Metal_AM}%
+\label{ch:Metal_AM}
+%\backgroundsetup{contents={DRAFT}}
 \input{pbf_metals}
+\backgroundsetup{contents={}}
 % <<< end of PBF processes
 
+%%%%%
+%%%%%
 
-% Hot Spot Defect >>>
+% Defect in PBF Processes >>>
 \chapter{Defects in PBF Processes}
-\label{ch:defects}%
+\label{ch:defects}
+\backgroundsetup{contents={DRAFT}}
 \input{defects}
+\backgroundsetup{contents={}}
 % <<< end of Hot Spot Defect
+
+%%%%%
+%%%%%
 
 % Hot Spot State of the Art >>>
 \chapter{Hot Spot Detection: a State of the Art Research}
-\label{ch:state_ot_the_art}%
+\label{ch:state_ot_the_art}
+\backgroundsetup{contents={DRAFT}}
 \input{state_of_the_art}
+\backgroundsetup{contents={}}
 % <<< end of PBF Hot Spot State of the Art
 
 
 % Proposed method Bagging Voronoi >>>
 \chapter{Bagging Voronoi Clustering Algorithm}
 \label{ch:baggingvoronoi}
+\backgroundsetup{contents={DRAFT}}
 \input{bvc}
+\backgroundsetup{contents={}}
 % <<< End of proposed method Bagging Voronoi
 
 
 % Conclusion and future development
 \chapter{Conclusions and future developments}
-\label{ch:conclusions}%
+\label{ch:conclusions}
+\backgroundsetup{contents={DRAFT}}
 \input{conclusion}
+\backgroundsetup{contents={}}
 % <<< End of conclusion
 
 %-------------------------------------------------------------------------
@@ -277,18 +326,18 @@
 % Appendix A: Research Methodology >>>
 \chapter{Appendix A}
 \label{ap:research}
+%\backgroundsetup{contents={DRAFT}}
 \input{appendixA}
+\backgroundsetup{contents={}}
 % <<< End of Appendix A
 
 % Appendix B: Python Code >>>
 \chapter{Appendix B}
 \label{ap:Python}%
+\backgroundsetup{contents={DRAFT}}
 \input{appendixB}
+\backgroundsetup{contents={}}
 % <<< End of Appendix B
 
-
-
-
 \cleardoublepage
-
 \end{document}

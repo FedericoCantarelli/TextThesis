@@ -1,15 +1,8 @@
-In this chapter, we will focus on the detection of so-called cold or hot spots, points characterized by an unusual thermal behavior in the print bed of PBF 3D printers for metallic components. In Section \ref{sec:comelotrovo} I will describe different approaches for defect detection, while in Section \ref{sec:sensoriniiniini} I will describe available sensors used in anomalies detection. Since I want this chapter to be fully-comprehensible to as many readers as possible, whenever I deem it necessary to explain certain aspects of presented methods a little deeper, I will provide a brief introductory overview to elucidate the fundamental aspects in Section \ref{sec:introperritardati}. For a detailed understanding of the research strategy employed to write this state-of-art review, please refer to Appendix \ref{ap:research}. 
-
-\section{Defects Characterization Methods}
-\label{sec:comelotrovo}
-
-\section{Sensors for Anomalies Detection}
-\label{sec:sensoriniiniini}
-
+In this chapter, we will focus on machine learning algorithm for hot spot detection. This type of anomalies have been widely described in previous section. Since I want this chapter to be fully-comprehensible to as many readers as possible, whenever I deem it necessary to explain certain aspects of presented methods a little deeper, I will provide a brief introductory overview to elucidate the fundamental aspects in Section \ref{sec:introperritardati}. For a detailed understanding of the research strategy employed to write this state-of-art review, please refer to Appendix \ref{ap:research}. 
 
 \section{Warm Up}
 \label{sec:introperritardati}
-In this section, I will explain some fundamental concepts that are essential for fully understanding the subsequent sections. If the reader is already familiar with these concepts, they can comfortably skip this section and proceed further. 
+In this section, I will explain some fundamental concepts that are essential for fully understanding of next section. If the reader is already familiar with these concepts, they can comfortably proceed to Section \ref{sec:hotspot}. 
 
 % Machine learning>>>
 \subsection{Machine Learning}
@@ -27,6 +20,9 @@ where $\mathbf{x}_i\in \mathbb{R}^p$ is a $p$ dimensional vector, containing the
 \end{itemize}
 To further highlight the difference between supervised and unsupervised learning, it's important to note that unsupervised learning is also defined as "learning without a teacher" in \citeauthor{tibshirani_elements_2008} (2008). So, the main difference between supervised and unsupervised learning is the input data: in former case, data is labeled a priori, while in the latter case is not. 
 % <<< end of Machine learning
+
+%%%%%
+%%%%%
 
 % Clustering algorithms >>>
 \subsection{Clustering Algorithms}
@@ -68,7 +64,12 @@ J\left(\mathbf{X}_1, \mathbf{X}_2\right) = \frac{\left|\mathbf{X}_1 \cap \mathbf
 \end{equation}
 \end{itemize}
 There are several different clustering algorithms that can be divided into two main groups, as in \citeauthor{james_introduction_2021} (2021): K-Means clustering and hierarchical clustering. In \emph{K-Means clustering}, we try to divide observation into a pre-specified number of clusters. On the other hand, in \emph{hierarchical clustering}, we do not specify the number of clusters in advance, but we rely on the dendrogram, a tree-like visual representation of the observations, that allows us to visualize all the clustering steps. Then, we can then "cut" the dendrogram in order to select the most appropriate number of cluster to us. In Fig. \ref{fig:clustiteration} there is an example of simulated data in the plane clustered into 3 clusters using the K-Means algorithm (that will be discussed later).
+% <<< End of Clustering algorithm
 
+%%%%%
+%%%%%
+
+% K-means algorithms >>>
 \subsubsection{K-Means Clustering Algorithm}
 \label{sss:kmeans}
 Since we will use K-Means, in Section \ref{sec:bvc} or in Appendix \ref{ap:Python}, we will delve deeper into it in a dedicated section. Let $C_1,\dots,C_k$ denotes the sets containing all the indices of the observation in respective the respective cluster. K-Means clustering is a very simple clustering algorithm we can use for complete partitioning a data collection of observations $\mathbf{x}=\left(X_1, \dots, X_p \right)$, described by $p$ features, into $K$ distinct, non-overlapping clusters. This means that:
@@ -112,8 +113,69 @@ The K-means algorithm progresses through iterative cycles, involving two primary
     \end{algorithmic}
 \end{algorithm} 
 In bagging clustering, since the initial guess of the centroids can lead to different labeling of the same observation, K-means algorithm is typical run several times. Then, final label will be defined by majority voting across the different intermediate clusterization.
-% <<< End of Unsupervised classification
+% <<< End of K-means clustering algorithmclassification
 
+
+% Principal component analysis >>>
+\subsection{Principal Component Analysis}
+\label{subsec:PCA}
+Another unsupervised machine learning technique is the principal component analysis (PCA). This method leverages the information patterns within the dataset to try to reduce the dimensionality of the problem. Principal components (PC) of a set of data in $\mathbb{R}^p$ provide a sequence of best linear approximation to that data, of all ranks $q\le p$ \cite{james_introduction_2021, tibshirani_elements_2008}. \emph{Principal component analysis} refers to the process by which principal components are computed. Suppose we have a dataset, which represents past experience $\mathbf{E}$ of a certain phenomenon, of unlabeled data and each realization $\mathbf{x}_i \in \mathbb{R}^p$ for all $i=1,\dots,n$. Thus, $\mathbf{E} \in \mathbb{R}^{n\times p}$. The first principal component of a set of features $\mathbf{X}_1, \mathbf{X}_2, \dots, \mathbf{X}_p$ is the normalized linear combination of the features
+\begin{equation}
+    \label{eq:firstPC}
+    Z_1=\phi_{11} \mathbf{X}_1+\phi_{21} \mathbf{X}_2+\cdots+\phi_{p1} \mathbf{X}_p
+\end{equation}
+By normalized, we mean that $\sum_{j=1}^p\phi_{j1}^2=1$. The elements $\phi_{11},\dots,\phi_{p1}$ are the loadings of the first principal component. But how can we find PCs? Let's suppose we want to find a linear model to represent the $i$-th observation. We are trying to find a linear combination such as:
+\begin{equation}
+    \label{eq:pcaf}
+    f(\lambda)=\bm{\mu}+\mathbf{V}_q\bm{\lambda}
+\end{equation}
+where $\bm{\mu}\in \mathbb{R}^p$ is a location vector, $\mathbf{V}_q$ is a $p\times q$ matrix with $q$ orthogonal unit vectors as columns, and $\bm{\lambda \in \mathbb{R}^q}$ is a vector of $q$ parameters. So, we can fit the model to the data by minimizing the sum of least squared errors:
+\begin{equation}
+    \label{eq:SSE}
+    \min _{\bm{\mu},\left\{\lambda_i\right\}, \mathbf{V}_q} \sum_{i=1}^N\left\|\mathbf{x}_i-\bm{\mu}-\mathbf{V}_q \lambda_i\right\|^2
+\end{equation}
+We can partially optimize for $\bm{\mu}$ and the $\lambda_i$ to obtain
+\begin{equation}
+    \hat{\bm{\mu}} = \left(E\left(\mathbf{X}_1\right), E\left(\mathbf{X}_1\right), \dots, E\left(\mathbf{X}_p\right)\right)
+\end{equation}
+\begin{equation}
+    \hat{\lambda}_i = \mathbf{V}_q^{T}(\mathbf{x}_i-\hat{\bm{\mu}})
+\end{equation}
+This leads to 
+\begin{equation}
+\label{eq:diocaro}
+    \min _{\mathbf{V}_q} \sum_{i=1}^N\left\|\left(\mathbf{x}_i-\hat{\bm{\mu}}\right)-\mathbf{V}_q \mathbf{V}_q^T\left(\mathbf{x}_i-\hat{\bm{\mu}}\right)\right\|^2
+\end{equation}
+The $p \times p$ matrix $\mathbf{H}_q=\mathbf{V}_q\mathbf{V}_q^T$ is a projection matrix and maps each point $\mathbf{x}_i$ onto it's rank~-~$q$ reconstruction $\mathbf{H}_qx_i$, the orthogonal projection of $x_i$ onto the subspace spanned by the columns of $\mathbf{V}_q$. The solution can be expressed as follows. Stacked the centered observations into rows of an $N\times p$ matrix $\mathbf{E}$, we can construct the singular value decomposition
+\begin{equation}
+    \label{eq:SVD}
+    \mathbf{E}=\mathbf{U}\bm{\Sigma}\mathbf{V}^T
+\end{equation}
+where $\mathbf{U}$ and $\mathbf{V}$ are unitary matrices and $\bm{\Sigma}$ is a $p \times p$ diagonal matrix, such that $\sigma_{11}\ge \sigma_{22} \ge \dots \ge \sigma{pp}\ge 0$. This means that $\mathbf{u}_1$ and $\mathbf{v}_1$ correspond to $\sigma_1$ are somehow more important with respect to $\mathbf{u}_2$ and $\mathbf{v}_2$ which are associated to $\sigma_{22}$ in explaining the information in $\mathbf{E}$ and so on and so forth. The columns of $\mathbf{U}$ are the basis vector of the new space and the columns of $\mathbf{U}\mathbf{D}$ are the principal components. The $\sigma_{j}$ are also called singular values and are the amount of variance explained by the $j$-th PC. Lastly, $\mathbf{v}_j=(\phi_{11} \dots \phi_{p1})$ re the loading vectors of such $j$-th PC.  For each rank $q$, the solution $\mathbf{V}_q$ to Eq. \ref{eq:diocaro}, consist of the first $q$ columns of $\mathbf{V}$. 
+
+\subsubsection{Handwritten Digits}
+This example is taken from \citeauthor{tibshirani_elements_2008} (2008).
+PCA can be applied to images as well. For instance, take a dataset containing handwritten digits. Let's consider its application on the digit '3'. The experiment was conducted on a set of 130 3s randomly sampled from a total of 658 instances. Each image is a 16$\times$16 grayscale image. We can see considerable variation in writing styles, character thickness and orientation in Fig. \ref{fig:3s}.  We can unfold images and treat each of them as points $x_i$ in $\mathbb{R}^{256}$ and we can use PCA on the dataset $E\in\mathbb{R}^{256\times 130}$.
+
+\begin{figure}
+    \centering
+    \subfloat[\label{fig:3s}]{
+        \includegraphics[scale=0.35]{Images/1303.png}
+    }
+    \qquad
+    \subfloat[\label{fig:principal3}]{
+        \includegraphics[scale=0.5]{Images/pc3.png}
+    }
+    \caption[Example of PCA of images.]{Example of PCA applaied to images dataset: the random sample of handwritten 3s (a) and the scatterplot of the first two principal components (b) with a superimposed grid in which images match red circles on the scatterplot\cite{tibshirani_elements_2008}.}
+\end{figure}
+We see that the first PC mainly accounts for the lengthening of the lower tail of the three, while the second PC accounts for character thickness. Each PC can then be reshaped to be interpreted as an image. Using just 50 PCs, we are able to explain 90\% of the variance of all the 3s, while with 12 PCs, we can account for 63\%.
+% <<< End of Principal component analysis
+
+%%%%%
+%%%%%
+
+
+% Deep Learning, ANN and CNN >>>
 \subsection{Artificial Neural Network and Deep Learnig}
 \label{subsec:deepl}
 It was 1956 when a team of professors and an expert from IBM Corporation, after spending two months discussing artificial intelligence at Dartmouth University, began to think about the possibility of creating virtual neural networks. These networks would learn and enhance the purpose for which they were designed through a self-improvement process, and they could be founded on the mathematical model of the human brain \cite{mccarthy_proposal_1955}. Indeed, the model of the human brain is especially well-suited for translation into the field of computer science. The human brain possesses an astonishingly vast number of computing units, known as neurons. There are approximately \num{10e11} neurons in the human brain, and each of them is forming about 7,000 synaptic connections with other neurons, amounting to nearly \num{5e14} total synapses in an adult. Moreover, the computational model of the brain is distributed among simple nonlinear units, it is redundant and so fault-tolerant, and it is capable of performing calculations in parallel \cite{matteo_matteucci_perceptrons_2021}. The mathematical virtual model of a neuron is called a perceptron, which is the unitary computational units of artificial neural networks (ANN). Just like in human neurons, the perceptron has dendrites that "collect" the charge from synapses, and once a certain threshold is exceeded, the accumulated charge is released and sent to other perceptrons. The portion of the schema in Fig. \ref{fig:perceptron} enclosed in the dashed line, is called activation function and is responsible for releasing perceptron's accumulated charge. There are various activation functions, with some of the most common ones can be seen in Fig. \ref{fig:actfunc}.
@@ -144,5 +206,57 @@ Another typical application of neural networks is as classification algorithms f
     \label{fig:cazzle}
 \end{figure}
 
-\paragraph{Convolution}
-\paragraph{Poolig layers}
+\paragraph{Convolution.} Convolutional layers "mix" all the input component. Convolution is an operation that allows us to combine all the input values from a certain region into a linear combination. Specifically, the convolution is described by the following equation:
+\begin{equation}
+    \label{eq:convolution}
+    y=\sum_iw_{ij}x_i+b
+\end{equation}
+where the parameters ot the layer are called filters. the same filter is used through the whole spatial extent of the input, in our case, the images. In Fig. \ref{fig:convmatrice} you can see a typical convolution operation graphically represented.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{Images/convolution.png}
+    \caption[Convolution operation]{Convolution operation graphically represented \cite{giacomo_boracchi_convolutional_2021}.}
+    \label{fig:convmatrice}
+\end{figure}
+In practice, the convolution operation can be viewed as a two-dimensional window that slides across the entire image, producing an output that is a linear combination of the matrix values and their corresponding values in the image.
+\paragraph{Poolig layers.} Pooling layers are used to reduce the spatial size of the input volume. Using the logic of a sliding window that traverses the image, a specific function is applied, often the maximum, with the aim of spatially resizing the input.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{Images/pooling.png}
+    \caption[Pooling layer.]{Example of pooling layer that performs a max operation \cite{giacomo_boracchi_convolutional_2021}.}
+    \label{fig:poolingmax}
+\end{figure}
+The stride parameter specifies how many elements the window shifts at once. In the figure, the window will move by two elements at a time on the y-axis.
+\paragraph{Activation layers.} Activation layers are used to introduce nonlinearities in the network, otherwise CNN mught be equivalent to a simple linear classifier. In practice, they are layers of neurons characterized by activation functions that introduce non-linearity into the levels, just as in ANNs. Two commonly used functions in these layers, which we haven't discussed yet, are the RELU (rectified linear units) and LEAKY RELU activation functions. The former is described as
+\begin{equation}
+    \label{eq:RELU}
+    T(x)=\left\{\begin{array}{rr}
+    x, & \text { if } x \geq 0 \\
+    0, & \text { if } x<0
+\end{array}\right.
+\end{equation}
+Whereas LEAKY RELU is similar to RELU but incorporates a slight slope for negative values, preventing neurons from dying off and becoming unresponsive after several layers. For a deeper understanding of this topic, one can refer to the vanishing gradient problem as discussed by Goodfellow.
+\begin{equation}
+    \label{eq:LEAKYRELU}
+    T(x)=\left\{\begin{array}{rr}
+    x, & \text { if } x \geq 0 \\
+    k\cdot x, & \text { if } x<0
+\end{array}\right.
+\end{equation}
+where $k$ is usually in the order of $10^{-2}$.
+The output of the convolution will be a dense feature layer, which implies that this layer can serve as input for an ANN, which will have as many output neurons as there are classes in the original domain. In Fig. \ref{fig:typicalcnn}below, there's an example of how a general CNN operates.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/CNNtypical.png}
+    \caption[CNN general structure.]{Graphical representation of a tipical CNN used for image classification \cite{giacomo_boracchi_convolutional_2021}.}
+    \label{fig:typicalcnn}
+\end{figure}
+% End of Deep learning, ANN and CNN
+
+%%%%%
+%%%%%
+
+% Hot spot >>>
+\section{Hot-Spot Detection Using ML Algorithm: A-State-Of-The-Art Review}
+\label{sec:hotspotstateart}
+% <<< End of Hot spot 

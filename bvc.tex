@@ -1,8 +1,8 @@
-As discussed in the previous chapter, most of the solutions found in the literature rely on deep learning models. However, these models have a significant drawback: they are very complex and with a lot of parameters, meaning they excel at predicting the model's output, but are not equally suitable for explaining the phenomenon. Indeed, deep learning model can be seen as black-box model. We can use packages such as Shap, shown in Fig. \ref{fig:shap}, available as a Python package. SHAP (SHapley Additive exPlanations) utilizes game theory principles to explain the outputs of any machine learning model. It bridges the gap between optimal contribution distribution and localized explanations by employing the traditional Shapley values from game theory, along with their associated extensions as described by \citeauthor{}.
+As discussed in the previous chapter, most of the solutions found in the literature rely on deep learning models. However, these models have a significant drawback: they are very complex and with a lot of parameters, meaning they excel at predicting the model's output, but are not equally suitable for explaining the phenomenon. Indeed, deep learning model can be seen as black-box model. We can use packages such as Shap, shown in Fig. \ref{fig:shap}, available as a Python package. SHAP (SHapley Additive exPlanations) utilizes game theory principles to explain the outputs of any machine learning model. It bridges the gap between optimal contribution distribution and localized explanations by employing the traditional Shapley values from game theory, along with their associated extensions as described by \citeauthor{lundberg_unified_2017} (2017).
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{Images/shap.png}
-    \caption[SHAP python package.]{Example of the SHAP python package \cite{noauthor_shap_nodate}.}
+    \caption[SHAP python package.]{Example of the SHAP python package \cite{scott_lundberg_shap_2023}.}
     \label{fig:shap}
 \end{figure}
 
@@ -182,7 +182,7 @@ As did in Section \ref{subsec:irradiance}, the metric $d(\cdot, \cdot)$ used is 
 
 \subsection{Deviation Index in Lattice Structure Cells}
 \label{subsec:devcell}
-In previous section, I have chosen to provide an example of how functional data and clustering algorithms can be used to conduct a layer-wise temperature profile analysis. However, these concepts can be readily adapted to other scenarios, including, for instance, particular application in three dimensions. An other possible application of this algorithm in three dimensions could be the clustering of functional data regarding the deviation of cell profiles in lattice structures. Recall that in 3 dimension, Voronoi regions are represented as polyhedra, like in Fig. \ref{fig:3dvoronoi}.
+In previous section, I have chosen to provide an example of how functional data and clustering algorithms can be used to conduct a layer-wise temperature profile analysis. However, these concepts can be readily adapted to other scenarios, including, for instance, particular application in three dimensions. In this section, I want to go beyond the primary domain of the thesis. I want to suggest how the algorithm could also be leveraged for the classification of functional data in three dimensions. A possible application in three dimensions could be the clustering of functional data regarding the deviation of cell profiles in lattice structures. Recall that in 3 dimension, Voronoi regions are represented as polyhedra, like in Fig. \ref{fig:3dvoronoi}.
 
 \begin{figure}[H]
     \centering
@@ -225,5 +225,11 @@ At the conclusion of step 5 in Fig. \ref{fig:colosimofunctional}, as outlined in
 \end{figure}
 % <<< End of Succesful case of the algorithm
 
+
+%>>> Simulation Study
+\section{Simulation Study}
+\label{sec:simstudy}
+\textcolor{red}{Se riesco a fare una simulazione con esito positivo la inserisco.} I dati che mi servono per fare la simulazione posso prenderli da qua \cite{anandan_kumar_faster_2021, burkhardt_thermo-mechanical_2022}.
+% <<< End of Simulation Study
 
 %As we will see in Section \ref{sec:bvc}, the number $K$ of clusters is an input of the algorithm, making hierarchical clustering not suitable for our purposes. But before delving into the algorithm's description, I also want to explain the concept of \textit{bagging} for clustering. It is based on the concept of bootstrapping. Bootstrapping is a resampling technique that helps in finding more reliable results from a clustering algorithm. In the algorithm, we will perform multiple clustering "rounds" in order to find a frequency distribution of the belongings of the observation to a specific cluster. The final cluster label for each observation will be the "most probable correct result" by majority voting.

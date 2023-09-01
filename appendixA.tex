@@ -6,15 +6,11 @@ In this thesis, I decided to adopt \emph{comprehensive systematic literature rev
 \begin{figure}
 \begin{center}
 \begin{tikzpicture}[scale=0.5]
-%% You can adjust the opacity here. For venn diagrams it is convenient to have a low opacity so that you can see intersections
 	\begin{scope} [fill opacity = .4]
-%% The draw command knows a lot of shapes. To make a rectangle you just need to specify two diagonal corners. Make sure you always have a semicolon at the end of your draw commands, otherwise latex flips out.
     \draw (-7,6) rectangle (6.5,-6);
-%% Similarly, you can make a circle by specifying the center and then the radius. You can also add a fill color, but if you're printing in black and white you'll probably want to remove that line.
     \draw[fill=green, draw = black] (-1.5,1) circle (3);
     \draw[fill=blue, draw = black] (1.5,1) circle (3);
     \draw[fill=red, draw = black] (0,-2) circle (3);
-%% We can use the node command to label points. If you put your cursor on "LARGE" or "textbf" a box will drop down with size and text style options.
     \node at (-4.8,6.5) {\scriptsize{Research Domain}};
     \node at (-3.8,4.5) {\scriptsize{Technology Domain}};
     \node at (3.5,4.5) {\scriptsize{Material Domain}};
@@ -26,7 +22,7 @@ In this thesis, I decided to adopt \emph{comprehensive systematic literature rev
 \end{figure}
 
 \paragraph{Research terms.}
-To identify the relevant keywords and terms for the research, I began by defining the research domain, identifying the most commonly used terms and their synonyms. Then, using snowballing approach \cite{wohlin_guidelines_2014}, I found other related terms, also leveraging the references from papers discovered with the initial queries. The schema of the aforementioned approach is described in Fig. \ref{fig:pallinacoca}. Specifically, I identified three domains for terms usage: the technological domain, outlined by the PBF processes discussed throughout the thesis; the materials domain associated with the PBF processes of interest; and the problem domain, focusing on the detection of hot spots. I used terms from the intersection of these three domains to structure the search queries for the databases mentioned subsequently. See Fig. \ref{fig:resdomains}.
+To identify the relevant keywords and terms for the research, I began by defining the research domain identifying the most commonly used words and their synonyms. Then, using the snowballing approach \cite{wohlin_guidelines_2014}, I found other related terms, leveraging the references from papers discovered with the initial queries. The schema of the method mentioned above is described in Fig. \ref{fig:pallinacoca}. Specifically, I identified three domains for terms usage: the technological domain, outlined by the PBF processes discussed throughout the thesis; the materials domain associated with the PBF processes of interest; and the problem domain, focusing on detecting hot spots. I used terms from the intersection of these three domains to subsequently structure the search queries for the databases mentioned. See Fig. \ref{fig:resdomains}.
 \begin{itemize}
     \item \textbf{Technological domain:} powder bed fusion, L-PBF, PBF, electron beam melting, selective laser sintering, SLS, EBM.
     \item \textbf{Material domain:} metal, alloy, metal powder.
@@ -63,7 +59,7 @@ Dued to query search system of Google Scholar, I used same queries.
 
 
 
-\section{Research result and selection process.}
+\section{Research Result and Selection Process.}
 \label{sec:resresults}
 \begin{figure}
     \centering

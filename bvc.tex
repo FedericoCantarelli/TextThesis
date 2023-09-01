@@ -6,22 +6,213 @@ As discussed in the previous chapter, most of the solutions found in the literat
     \label{fig:shap}
 \end{figure}
 
-In this section, I will propose an approach for clustering areas within the printing plate with anomalous behaviours. With this approach, we should be able to clustering temperature profiles that exhibit a similar behaviour considering also the distance in the printing plane. This analysis can be done pixel-wise, window-wise or, in the case of a lattice structure, cell-wise. "In general, it can be applied to any functional data referenced by a lattice in $\mathbb{R}$, $\mathbb{R}^2$ or $\mathbb{R}^3$. This algorithm is based on functional data. The analysis of functional data allows us to gain a comprehensive and detailed understanding of the anomalies, which would enable us to discern if there are specific zones on the print plane behaving irregularly and to understand how hot spots might influence the mechanical properties of the printed part, given the fact that we have a functional knowledge of those phenomena. In Section \ref{sec:fda}, I will provide a brief introduction to functional data analysis, in Section \ref{sec:bvc}, I will provide a detailed explanation of the Bagging Voronoi algorithm proposed by \citeauthor{secchi_bagging_2013} for functional data clustering and, in Section \ref{sec:bcv-cases} I will present three successful case studies of algorithm application.
+In this section, I will propose an approach for clustering areas within the printing plate with anomalous behaviours. With this approach, we should be able to clustering temperature profiles that exhibit a similar behaviour considering also the distance in the printing plane. This analysis can be done pixel-wise, window-wise or, in the case of a lattice structure, cell-wise. "In general, it can be applied to any functional data referenced by a lattice in $\mathbb{R}$, $\mathbb{R}^2$ or $\mathbb{R}^3$. This algorithm is based on functional data. The analysis of functional data allows us to gain a comprehensive and detailed understanding of the anomalies, which would enable us to discern if there are specific zones on the print plane behaving irregularly and to understand how hot spots might influence the mechanical properties of the printed part, given the fact that we have a functional knowledge of those phenomena. In Section \ref{sec:fda}, I will provide a brief introduction to functional data analysis, in Section \ref{sec:bvc}, I will provide a detailed explanation of the Bagging Voronoi algorithm proposed by \citeauthor{secchi_bagging_2013} (2013) for geo-referenced functional data clustering, and in Section \ref{sec:bcv-cases} I will present two successful case studies of algorithm application.
 
 % Functional Data Analysis >>>
 \section{Functional Data Analysis}
 \label{sec:fda}
-\textbf{\textcolor{red}{To be completed.}}
-\\
-%In the Indeed, functional data analysis (FDA) is a branch of statistics that deals with data represented as functions. Instead of observing data at a set of fixed points, as is common in traditional statistics, FDA focuses on data that comes in the form of curves, surfaces, or even more general objects. Common examples include temperature or financial data over time. FDA provides tools and techniques to analyze and understand the intrinsic nature of such functional data. It allows for the examination of variability and dynamics within the data and can be particularly useful when understanding patterns or trends in the data is of importance. In our case, the 
-In this section, I will discuss Functional Data Analysis (FDA) and Functional Principal Component Analysis (FPCA). I will provide just a brief overview to give readers the foundational knowledge needed to understand the algorithm described in Section \ref{sec:bvc}. 
+In this section, I will discuss Functional Data Analysis (FDA) and Functional Principal Component Analysis (FPCA). I will provide just a brief overview to give readers the foundational knowledge needed to understand the algorithm described in Section \ref{sec:bvc}. The material of this section comes mainly from \citeauthor{ramsay_functional_2006} (2006) and \citeauthor{ramsay_functional_2009} (2009).
 
-\textit{Piccola introduzione sulla FDA from \cite{ramsay_functional_2009} e sulle basi in generale}
+Functional data are measurable observations of a given phenomenon of which we can assume, with a fair degree of certainty, that can be represented as an analytic function. Indeed, although each observation is a single discrete value, these values reflect the smooth behavior of the generative function of those observations. Fig. \ref{fig:bambine} shows the height data in \unit{\centi\metre} of 10 girls measured at 31 different temporal instants in the Berkeley Growth Study. We can see the smooth behavior typical of analytic functions, suggesting the existence of a height function. Like all mathematical functions, the height function has interesting properties, including continuity and the possibility to compute function derivatives. Indeed, we can calculate the second derivative, the acceleration of growth, which can be seen in Fig. \ref{fig:accelerazione}.
+\begin{figure}
+    \centering
+    \subfloat[\label{fig:bambine}]{
+        \includegraphics[scale=0.28]{Images/crescita.png}
+    }
+    \qquad
+    \subfloat[\label{fig:accelerazione}]{
+        \includegraphics[scale=0.28]{Images/accelerazione.png}
+    }
+    \caption[Functional data]{The heights of 10 girls measured at 31 ages (a) and their estimated accelerations (b) \cite{ramsay_functional_2006}. The dotted line is the cross-sectional mean acceleration.}
+    \label{fig:tuttoinsieme}
+\end{figure}
+Even if the height observations are taken nominally at the same age for each girl, it is not strictly necessary for this to happen. Indeed, the points at which the function is observed may change from one subject to another. This is especially important in quality control that relies on sensors we discussed in Section \ref{sec:sensoriniiniini}. The signals transmitted by these sensors may represent disturbances that prevent the observed quantity from being correctly measured, causing discontinuities or missing values. It is also important to notice that FDA does not suffer from the problems of classical multivariate methods. In fact, it can also be used when the number of variables $p$ is larger than the available sample size $n$. In case of Fig. \ref{fig:tuttoinsieme}, we have $p=31$ and $n=10$. In general, the goal of the FDA is to represent data as functions, with the aim of providing a representation that helps analysis and highlights the various characteristics of the collected data. This allows us to explain patterns of variation in the data and to compare data containing different sets of observations of the same function or different functions for a common set of replicates. We can write each functional observation as the sum of a functional component and a random component that we will call noise. Formally, we can write every profile $y_j$ as 
+\begin{equation}
+    y_j = f(t_j) + \varepsilon_j \qquad \varepsilon_j\sim N(0, \sigma_j^2)
+\end{equation}
+We can approximate the unknown functional component as a linear combination of a functional basis. A basis function system is a set of known functions $\phi_k$ such that they are mathematically independent of each other and have the property that they can arbitrarily well approximate any function by taking a weighted sum of a sufficiently large number $K$ of these functions.
+\begin{equation}
+\label{eq:linear}
+    \hat{f}(t)=\sum_{k=1}^K c_k \phi_k(t)
+\end{equation}
+Now, let $\mathbf{c}$ indicate the vector of length $K$ of the coefficients $c_k$ and $\bm{\phi}$ as the functional vector whose elements are the basis functions $\phi_k$, we can also express \ref{eq:linear} in matrix notation as
+\begin{equation}
+\label{eq:matrice}
+    \hat{f}(t)=\mathbf{c}'\bm{\phi}=\bm{\phi}'\mathbf{c}
+\end{equation}
+When $K=n$ we have a special situation called exact representation or interpolation. It is a limit situation because we can choose the coefficients of the weighted sum such that $\hat{f}(t_j)=y_j$ for each $j$. Thus, $K$ controls the smoothness of the approximation $\hat{f}(t)$. We have to choose this parameter according to used functional basis and the characteristics of the data. Another parameter to be chosen is the type of functional basis. Indeed, there are different functional bases, each with different characteristics, which should ideally reflect the features of observed data. In a certain way, we can use the parameter $K$ to understand whether the used basis was more or less suitable: the smaller $K$ is, the better the base reflects the characteristics of the data. The type of basis selected is particularly important when one is interested in analysing derivatives. Formally, when we are interested in
+\begin{equation}
+    \label{eq:derivative}
+    D \hat{f}(t)=\sum_k^K \hat{c}_k D \phi_k(t)=\hat{\mathbf{c}}^{\prime} D \phi(t)
+\end{equation}
+where $D$ is the derivative operator defined as $Df(t)=\frac{d}{dt}f(t)$. This operator can also define further derivatives as powers of $D$.
+\begin{equation}
+    \label{eq:deroperator}
+    D^2f(t)=\frac{d^2}{dt^2}f(t), \dots, D^kf(t)=\frac{d^k}{dt^k}f(t)
+\end{equation}
+We will now describe some of the most commonly used functional bases, showing their applications and their characteristics.
+\paragraph{Polynomial basis.} The polynomial base consists of monomials of different order.
+\begin{equation}
+    \label{eq:polinomial}
+    \phi_k(t)=(t-\omega)^k \qquad k=0,\dots, K
+\end{equation}
+where $\omega$ is a shift parameters that is usually chosen to be in the center of the interval of approximation. The polynomial basis tends to fit the centre of the data very well, but the tails tend to have less ideal behaviour. This is why they are never used for extrapolation or forecasting. However, the basis exhibits a desirable behaviour: $t_j$ are equally spaced, the basis can be fit with very little computational effort. Moreover, derivatives are simple to compute and they tend to be good estimators for the true derivatives.
+\paragraph{Exponential and power basis.} The exponential base consists of a series of exponential functions 
+\begin{equation}
+    \label{eq:exponential}
+    \phi_k(t)=\exp (\lambda_kt) \qquad k=1,\dots, K
+\end{equation}
+where the rate parameters $\lambda_k$ are all distinct and often $\lambda_1=0$. This basis is particularly useful as linear differential equations with constant coefficients have expansions in terms of an exponential basis as solutions. While power basis
+\begin{equation}
+    \label{eq:power}
+    \phi_k(t)=t^{\lambda_k} \qquad k=1,\dots, K
+\end{equation}
+is less useful, but can be helpful when $t$ is strictly positive.
+\paragraph{Fourier basis.} One of the most famous and most widely used bases is the Fourier basis, mainly because it is able to capture the periodic behaviour of data, but also because it is very usefull for stable functions and when curvatures tent to be of the same order in all the data. However, Fourier basis is not suitable to data known or suspected to reflect some kind of discontinuities. Fourier basis is defined as:
+\begin{equation}
+    \label{eq:fourier}
+    \phi_k(t)=\left\{ \begin{array}{ll}
+         \phi_k(t)=1 & \text{for} \quad k = 0 \\
+         \phi_{2k-1}(t)= \sin(k\omega t) & \text{for} \quad k = 1, \dots, K \\
+         \phi_{2k}(t)= \cos(k\omega t) & \text{for} \quad k = 1, \dots, K
+    \end{array}\right.
+\end{equation}
+The period of the basis is determined as $\mathcal{T}=\frac{2\pi}{\omega}$. The algorithm used to calculate the coefficients of this basis, the Fast Fourier transform, makes it possible to find the coefficients extremely efficiently when $n$ is a power of 2 and the observations are equally spaced.
+\paragraph{B-splines basis.} The B-splines base is a splines base. Splines are basis defined by a number $L$ of knots and an order $m$. Knots are values $\tau_l$ for $l=1,\dots,L-1$ that divide the interval on which a function has to be estimated into $L$ sub-intervals. Remember that every sub-interval must contain at least one observation. On each sub-interval, the spline is a polynomial function of a specific order $m$, which is the degree of the polynomial itself. Polynomials defined on adjacent intervals join smoothly at knots value, such that the function at that point is constrained to the value of the knot itself. By increasing the numbers of knots, the fit of the estimated function to the observed data can be improved, up to the extreme situation where the knot numbers have the same value as the observed data. The number of nodes will therefore affect the goodness of fit to the observed data. In a certain way, the parameter $L$ regulates the flexibility of our fit. This is why it is a good practice for regions characterised by complex variations to have more nodes. Thus, to summarise what has been said so far, a spline is defined by two elements: the order of the polynomials and the sequence of nodes.
+B-splines are a particular spline basis developed by de Boor in 2001. 
+\begin{figure}
+\centering
+\includegraphics[width=0.4\textwidth]{Images/bspline.png}
+\caption[Bsplines fitting.]{The thirteen basis functions defining an order four spline with nine interior knots, shown as vertical dashed lines \cite{ramsay_functional_2006}.}
+\label{fig:bspline_13}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{Images/bsplines.png}
+\caption[Bsplines fitting.]{In the left panels the solid line indicates spline function of a particular order that fits the sine function shown as a dashed line. In the right panels the corresponding fits to its derivative, a cosine function, are shown. The vertical dotted lines are the interior breakpoints or knots defining the spline fits \cite{ramsay_functional_2006}.}
+\label{fig:bsplines}
+\end{figure}
+From Fig. \ref{fig:bspline_13} we can see that the three functions on the left and the last three on the right are different from the other. When transitioning from the left edge toward the center, the spans in which these functions remain positive expand from one to four, yet they consistently have the same smooth transition that's twice-differentiable. On the other hand, if we move from the center to the left or right, functions have different levels of smoothness: the far-left spline is discontinuous, the following one is only continuous, and the last is differentiable once. It makes perfectly sense that we experience a loss in differentiability at the edges, given that we typically lack knowledge about the behavior of the function we're approximating outside the interval.
+\paragraph{Wavelets basis.} We can construct a basis for all functions on $\left(- \infty, \infty \right)$ that are square integrable by choosing a suitable mother wavelet function $\psi$ and then considering all dilations and translations of the form
+\begin{equation}
+    \label{eq:wavelet}
+    \psi_{j k}(t)=2^{j / 2} \psi\left(2^j t-k\right)
+\end{equation}
+for integers $j$ and $k$. The wavelet expansion of a function $f$ gives a multiresolution analysis in the sense that the coefficient of $\psi_{jk}$ yields information about $f$ near position $2^{-j}k$ on scale $2^{-j}$, i.e., at frequencies near $c2^j$ for some constant $c$. Wavelets are good for modeling sharp local features even discontinuity, localized in both space and frequency, which can be computed in an efficient way. Multidimensional wavelets provides coherent estimates of ECG traces, where the different projections of the heart dynamics are among them consistent.
+\paragraph{Fit model to data.} There are different ways to fit a model to observed data. When we have to estimate a model, we want the model to fit our data in some way. To quantify how well it fits, we can define the concept of sum of squared errors defined as
+\begin{equation}
+    \label{eq:sse}
+    \operatorname{SSE}(\mathbf{y} \mid \mathbf{c})=\sum_{j=1}^n\left[y_j-\sum_k^K c_k \phi_k\left(t_j\right)\right]^2
+\end{equation}
+or equivalently, we can re-write it in matrix form as
+\begin{equation}
+    \label{eq:ssematrix}
+    \operatorname{SSE}(\bm{y} \mid \mathbf{c})=(\mathbf{y}-\bm{\Phi} \mathbf{c})^{\prime}(\mathbf{y}-\bm{\Phi} \mathbf{c})
+\end{equation}
+where $\bm{\Phi}$ is the $n \times K$ matrix containing the values $\phi_k(t_j)$. By deriving equation \ref{eq:ssematrix} with respect to $c$, we obtain equation
+\begin{equation}
+ \label{eq:c}
+    2 \bm{\Phi} \bm{\Phi}^{\prime} \mathbf{c}-2 \bm{\Phi}^{\prime} \mathbf{y}=0
+\end{equation}
+and solving for $\mathbf{c}$, this provides the estimate $\hat{\mathbf{c}}$ that minimizes the least squares solution
+\begin{equation}
+    \label{eq:cestimated}
+    \hat{\mathbf{c}}=\left(\bm{\Phi}^{\prime} \bm{\Phi}\right)^{-1} \bm{\Phi}^{\prime} \mathbf{y}
+\end{equation}
+The vectore $\hat{\mathbf{y}}$ of fitted values is
+\begin{equation}
+    \hat{\mathbf{y}}=\bm{\Phi} \hat{\hat{\mathbf{c}}}=\bm{\Phi}\left(\bm{\Phi}^{\prime} \bm{\Phi}\right)^{-1} \bm{\Phi}^{\prime} \mathbf{y}
+\end{equation}
+If we want to fit a model on data with a non-stationary and/or auto-correlated stochastic component, however, we must use weighted least squares fits. In this case, equation \ref{eq:ssematrix} becomes
+
+\begin{equation}
+    \label{eq:wls}
+    \operatorname{SSE}(\mathbf{y} \mid \mathbf{c})=(\mathbf{y}-\bm{\Phi} \mathbf{c})^{\prime} \mathbf{W}(\mathbf{y}-\bm{\Phi} \mathbf{c})
+\end{equation}
+where the matrix $\mathbf{W}$ is a symmetric positive definite matrix that allows for unequal weightin of squares and products of residuals. The matrix $\mathbf{W}$ is defined as
+\begin{equation}
+    \mathbf{W}=\bm{\Sigma}_e^{-1}
+\end{equation}
+where $\bm{\Sigma}_e^{-1}$ is the variance-covariance matrix for the noise. AS before, if we derive \ref{eq:wls} with respect to $\mathbf{c}$ and by solving the equation, we get the weighted least squares estimate $\hat{\mathbf{c}}$ of the coefficient vector $\mathbf{c}$ defined as
+\begin{equation}
+    \hat{\mathbf{c}}=\left(\bm{\Phi}^{\prime} \mathbf{W} \bm{\Phi}\right)^{-1} \bm{\Phi}^{\prime} \mathbf{W} \mathbf{y}
+\end{equation}
+Finally, in the case of a splines basis, we can smoothing the model to the data by also introducing a roughness penalty. We have already encountered the derivative operator in \ref{eq:deroperator}. The first two derivative operators are particularly relevant because  $Df(t)$ is the local slope of $f(t)$ and $D^2f(t)$ is its curvature. We can therefore define the roughness of the $m$-th derivative as
+\begin{equation}
+    \label{eq:roughness}
+    \begin{aligned}
+\operatorname{PEN}_m(x) & =\int\left[D^m x(s)\right]^2 d s \\
+& =\int\left[D^m \mathbf{c}^{\prime} \boldsymbol{\phi}(s)\right]^2 d s \\
+& =\int \mathbf{c}^{\prime} D^m \boldsymbol{\phi}(s) D^m \boldsymbol{\phi}^{\prime}(s) \mathbf{c} d s \\
+& =\mathbf{c}^{\prime}\left[\int D^m \boldsymbol{\phi}(s) D^m \boldsymbol{\phi}^{\prime}(s) d s\right] \mathbf{c} \\
+& =\mathbf{c}^{\prime} \mathbf{R} c
+\end{aligned}
+\end{equation}
+We can then find the right trade-off between the fitting of the data and the smoothness of fitted curve by minimising the penalised sum of squared errors
+\begin{equation}
+    \label{eq:pensse}
+    \operatorname{PENSSE}_\lambda(f)=[\mathbf{y}-f(\mathbf{t})]^T[\mathbf{y}-f(\mathbf{t})]+\lambda \operatorname{PEN}_2[f]
+\end{equation}
+where $\lambda$ is a smoothing arameter measuring the compromise between fit and smoothness. As $\lambda$ increases, roughness is increasingly penalized and $\hat{f}(t)$ will become linear. As it decreases, the penalty is reduced and allows $\hat{f}(t)$ to fit the data better. In Fig. \ref{fig:lambda} we can see the different fit of yearly precipitations data of Vancouver obtained by using different values of $\lambda$.
+\begin{figure}
+    \centering
+    \subfloat[\label{fig:-1}]{\includegraphics[width = 0.3\textwidth]{Images/-1.png}}
+    \subfloat[\label{fig:7}]{\includegraphics[width = 0.3\textwidth]{Images/7.png}}
+    \subfloat[\label{fig:15}]{\includegraphics[width = 0.3\textwidth]{Images/15.png}}
+    \caption[PENSSE with different $\lambda$]{PENSSE on Vancouver precipitations data with $\lambda=-1$ (a), $\lambda=7$ (b) and $\lambda=15$ (c) \cite{ramsay_functional_2009}.}
+    \label{fig:lambda}
+\end{figure}
+Finally, the estimated coefficient vector $\hat{\mathbf{c}}$ will be 
+\begin{equation}
+    \hat{\mathbf{c}}=\left(\boldsymbol{\Phi}^{\prime} \mathbf{W} \boldsymbol{\Phi}+\lambda \mathbf{R}\right)^{-1} \boldsymbol{\Phi}^{\prime} \mathbf{W} \mathbf{y}
+\end{equation}
+and thus the data-fitting vector $\mathbf{\hat{y}}$ is
+\begin{equation}
+    \label{eq:unbelcasino}
+    \hat{\mathbf{y}}=\boldsymbol{\Phi}\left(\boldsymbol{\Phi}^{\prime} \mathbf{W} \boldsymbol{\Phi}+\lambda \mathbf{R}\right)^{-1} \boldsymbol{\Phi}^{\prime} \mathbf{W} \mathbf{y}=\mathbf{S}_{\phi, \lambda} \mathbf{y}
+\end{equation}
+\paragraph{Choose the number $K$ of basis functions.} As we have already seen in previous paragraphs, by increasing the number of basis function $K$ we can increase the goodness of fit. Indeed, the larger $K$, the better the fit to data. However, by increasing $K$ disproportionately, our model would also capture the stochastic component of the noise. On the other hand, by decreasing $K$ too much, we may risk missing some features of the data. it is the classic problem of the trade-off between bias and variance. The bias is defined as
+\begin{equation}
+    \label{eq:bias}
+    \operatorname{Bias}[\hat{x}(t)]=x(t)-\mathrm{E}[\hat{x}(t)]
+\end{equation}
+and for large values of $K$, this quantity is small. On the other hand, for larger $K$ tha variance
+\begin{equation}
+    \label{eq:variance}
+    \operatorname{Var}[\hat{f}(t)]=\mathrm{E}\left[\{\hat{f}(t)-\mathrm{E}[\hat{f}(t)]\}^2\right]
+\end{equation}
+will be larger. We can write SSE from \ref{eq:sse} as 
+\begin{equation}
+    \label{eq:ssebias}
+    \operatorname{SSE}[\hat{f}(t)]=\mathrm{E}\left[\{\hat{f}(t)-f(t)\}^2\right]] = \operatorname{Bias}^2[\hat{f}(t)]+\operatorname{Var}[\hat{f}(t)]
+\end{equation}
+Therefore, to find the correct number of bases $K$, it is sufficient to minimise the SSE, as shown in Fig. \ref{fig:tradeoff}.
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{Images/tradeoff.png}
+\caption[Bias variance trade-off.]{The heavy solid line indicates mean squared error totaled across the ages of observation between three and sixteen. The dashed line shows the totaled sampling variance, and the dotted-dashed line shows the totaled squared bias \cite{ramsay_functional_2006}.}
+\label{fig:tradeoff}
+\end{figure}
+\paragraph{Choose the right values of $\lambda$ in PENSSE.} When we have to decide which parameter to use to penalise \ref{eq:pensse}, we can carry out the same operation as in previous paragraph by minimising generalised cross validation defined as
+\begin{equation}
+\label{eq:gcv}
+    \operatorname{GCV}(\lambda)=\left(\frac{n}{n-d f(\lambda)}\right)\left(\frac{\operatorname{SSE}}{n-d f(\lambda)}\right)
+\end{equation}
+where $df(\lambda)$ are the degrees of freedom value for the spline smooth and are computed as
+\begin{equation}
+   df(\lambda)=\operatorname{trace} \mathbf{S}_{\phi, \lambda}
+\end{equation}
+and $\mathbf{S}_{\phi, \lambda}$ is defined in \ref{eq:unbelcasino}.
+
 
 \subsection{Functional Principal Component Analysis}
-\textit{Piccola introduzione sulla FPCA from \cite{ramsay_functional_2009}.}
+\textcolor{red}{\textit{Piccola introduzione sulla FPCA da \cite{ramsay_functional_2009}.}}
+
 % <<< End of Functional Data Analysis
 
+%%%%%
+%%%%%
 
 % Bagging Voronoi Clustering Algorithm >>>
 \section{Bagging Voronoi Classifier}
@@ -93,7 +284,7 @@ where $w_{\mathbf{x}}^i$ is a Gaussian weight centered in $Z_i$ and decreasing w
 
 \paragraph{Step 4: Cluster Matching} The output of the $b$-th replicate of the bootstrap phase of the algorithm is a label assignment for each local representative estimated during the $b$-th run. All sites $\mathbf{x} \in V_i^b$ get the same label associated to the function local representative $g_i^b(t)$. To obtain a classification map of the lattice $\mathcal{S}_0$, we consider the frequency distribution of assignment of each site to each of the $K$ clusters along the $B$ replicates. To compute this frequency distribution we need in turn to assume that cluster labels $\{C_1^b, \dots, C_K^b\}$ are coherent along the $B$ replicates. More specifically, we want cluster labels $\{C_1^b, \dots, C_K^b\}$ to be coherent with $\{C_1^m\, \dots, C_K^m\}$, for all $m<b$ and $b\geq2$. This is obtained through cluster matching. Cluster matching is a set of techniques that allow us to keep different clustering algorithm outputs coherent. I will discuss a simple approach based on the use of contingency table. The algorithm looks for the label permutation that minimizes the total sum of the off-diagonal frequencies in the contingency table describing the joint distribution of sites along the classifications at two subsequent replicates. At the end of clustering matching, for each site $\mathbf{x}$ we will have a vector $\pi_{\mathbf{x}}^K=\left(P_1, \dots, P_K\right)$ where each $P_i, \quad i=1,\dots,k$ is the frequency the label $k$ was assigned to the site $\mathbf{x}$. The final label will be the label associated to maximum $P_k$. In other words, it is a majority voting process among the different replicates $b$.
 
-\paragraph{Step 5: Evaluate Output} To have an overview of the statistical validity of the clustering just performed, we can use \textit{spatial entropy}. This concept is directly derived from the classical notion of entropy. Considering the frequency distribution vector $\boldsymbol{\pi}=(\pi_{\mathbf{x}}^1,\dots,\pi_{\mathbf{x}})^K$ of each site $\mathbf{x} \in \mathcal{S}_0$ to each of the $K$ clusters obtained after the bootstrapping step of the algorithm. The entropy associated site $\mathbf{x}$ classification in the site $\mathbf{x}\in\mathcal{S}_0$ is defined as
+\paragraph{Step 5: Output Evaluation} To have an overview of the statistical validity of the clustering just performed, we can use \textit{spatial entropy}. This concept is directly derived from the classical notion of entropy. Considering the frequency distribution vector $\boldsymbol{\pi}=(\pi_{\mathbf{x}}^1,\dots,\pi_{\mathbf{x}})^K$ of each site $\mathbf{x} \in \mathcal{S}_0$ to each of the $K$ clusters obtained after the bootstrapping step of the algorithm. The entropy associated site $\mathbf{x}$ classification in the site $\mathbf{x}\in\mathcal{S}_0$ is defined as
 \begin{equation}
 \mathbf{\eta}_{\mathbf{x}}=-\sum_{k=1}^K\pi_{\mathbf{x}^k}\cdot \log(\pi_{\mathbf{x}^k})
 \end{equation}
@@ -157,7 +348,7 @@ where $T_{\mathbf{x}j}^q$ indicates the time interval in which the $q$-th mobile
     \caption[Erlang profile.]{Erlang profile for a site in the lattice $\mathcal{S}_0$ \cite{secchi_analysis_2015}.}
     \label{fig:secchino}
 \end{figure}
-However, for some sites of the lattice, Erlang profiles had some missing values, and in some instances, they were entirely missing. Therefore, after the data cleaning phase, the authors decided to focus only on a non-uniform time grid of $p = 1,308$ elements, each element of the time grid being relative to a quarter of an hour for which an Erlang measurement has been observed in at least one site of the lattice. In Algorithm \ref{alg:bvc} for dimensional reduction of functional data, FPCA was suggested. While FPCA stands as an effective technique for identifying optimal subspaces to represent data, it has a limitation in its global approach, making it less appropriate for multi-resolution analysis. This is primarily because its basis elements typically involve a linear combination of all foundational variables. So, authors decided to use a treelet basis, introduced in \citeauthor{lee_treelets--adaptive_2008} (2008). For this specific case, since the data exhibits an evident seasonality, authors decided to use a Fourier basis with a period equal to 1 week. Thus, the reconstructed functional form of the Erlang profile for site $\textbf{x} \in \mathcal{S}_0$ is a function $E_{\textbf{x}(t)}$ such that:
+However, for some sites of the lattice, Erlang profiles had some missing values, and in some instances, they were entirely missing. Therefore, after the data cleaning phase, the authors decided to focus only on a non-uniform time grid of $p = 1,308$ elements, each element of the time grid being relative to a quarter of an hour for which an Erlang measurement has been observed in at least one site of the lattice. In Algorithm \ref{alg:bvc} for dimensional reduction of functional data, FPCA was suggested. While FPCA stands as an effective technique for identifying optimal subspaces to represent data, it has a limitation in its global approach, making it less appropriate for multi-resolution analysis. This is primarily because its basis elements typically involve a linear combination of all foundational variables. So, authors decided to use a treelet basis, introduced in \citeauthor{lee_treeletsadaptive_2008} (2008). For this specific case, since the data exhibits an evident seasonality, authors decided to use a Fourier basis with a period equal to 1 week. Thus, the reconstructed functional form of the Erlang profile for site $\textbf{x} \in \mathcal{S}_0$ is a function $E_{\textbf{x}(t)}$ such that:
 \begin{equation}
     E_{\textbf{x}}(t)=\frac{c_0^{\textbf{x}}}{2} + \sum_{h=1}^H \left[a_h^{\textbf{x}}\cos \left( h\omega t\right) + b_h^{\textbf{x}}\cos \left( h\omega t\right) \right]
 \end{equation}

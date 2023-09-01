@@ -74,7 +74,7 @@ In last years, thanks to advancements in both computational power available at l
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{Images/Level Measurement.png}
-    \caption[In-situ measurement levels.]{Four in-situ measurement levels applicable to PBF processes \cite{leach_-machine_2020}.}
+    \caption[In-situ measurement levels.]{Four in-situ measurement levels applicable to PBF processes \cite{colosimo_-machine_2020}.}
     \label{fig:levels}
 \end{figure}
 
@@ -105,7 +105,7 @@ In \emph{level ~0}, we can use embedded sensors integrated within the printer, t
     \subfloat[\label{fig:fig:offaxialebm}]{
         \includegraphics[scale=0.35]{Images/off axial EBM.png}
     }
-    \caption[Off-axis sensing.]{Example of off-axis sensing architectures in SLS (a) and EBM (b) \cite{leach_-machine_2020}.}
+    \caption[Off-axis sensing.]{Example of off-axis sensing architectures in SLS (a) and EBM (b) \cite{colosimo_-machine_2020}.}
 \end{figure}
 In \emph{level ~1}, i.e. measurement and characterisation of layer properties, we can distinguish two further types of measurements. The first is conducted before laser scanning, which allows us to identify areas where the powder is not uniform, potential defects produced by the recoating system or super-elevated edges. The second is performed after the laser scanning, through which we can detect any contamination of the powder of the printed slice or any geometric or dimensional deviations from the nominal shape. There are several types of sensors that can be employed for anomaly detection at this level.
 \begin{figure}
@@ -134,7 +134,7 @@ In \emph{level ~1}, i.e. measurement and characterisation of layer properties, w
 \end{figure}
 Other authors proposed and tested multi-view configurations, with two or more cameras, suitable to achieve higher resolution and accuracy, like in \citeauthor{kalms_new_2019} (2019).
 \paragraph{Blade Mounted Sensor.} Another possible approach for level 1 process monitoring is to employ an optical sensor directly mounted on the recoating blade of PBF printers. In this way, we can avoid the geometric distortion typical of off-axis systems. Moreover, these sensors can be used both for obtaining a 2D representation of the print bed and for reconstructing the height maps. In the former case, we can obtain a resolution up to \SI{4800}{DPI} over a length of \SI{210}{\milli\metre} with a spatial resolution of \SI{5.3}{\micro\metre / pixel} \cite{tan_phuc_high-resolution_2019}, while in the latter with a little lower resolution of \SI{20}{\micro\metre / pixel} \cite{barrett_micron-level_2018}.
-\paragraph{Co-axial sensing.} L-PBF offers the possibility to leverage the back-scattered light from the melt pool and its adjacent areas, to gauge specific metrics indicative of melt-pool dynamics. Scattered light pass through the optical path of the laser, passing the same lenses of processing laser, and a semi-reflective mirror redirects the laser beam to the scanner, while simultaneously allowing the light emitted from the melt pool to be detected by sensors. This emitted light is then divided and directed to each sensor. Various co-axial detection designs might encompass multiple pyrometers, bi-wavelength or multi-wavelength pyrometers, and assorted imaging devices in either the visible or infrared spectrum. An example of a co-axial sensing system can be seen in Fig. \ref{fig:coaxiallaser}. With this method, we can reach really high sample rates of \SI{50}{\kilo\hertz}, but the observation area is typically limited to \qtyproduct{0.5 x 0.5}{\milli\metre}, making this method unsuitable to capture time evolution. Alterations in the melt pool's dimensions and luminosity/temperature can induce changes in the pyrometer's readings, facilitating the observation of melt pool consistency and any unusual signal shifts. This architecture was first developed by the Katholieke Universiteit Leuven and licensed by Concept Laser \cite{leach_-machine_2020, kruth_jean-pierre_feedback_2007, berumen_quality_2010}. This measurement approach has achieved outstanding results, with a lateral resolution of \SI{30}{\micro\metre} and a vertical resolution of \SI{7}{\micro\metre} \cite{fleming_tracking_2020}.
+\paragraph{Co-axial sensing.} L-PBF offers the possibility to leverage the back-scattered light from the melt pool and its adjacent areas, to gauge specific metrics indicative of melt-pool dynamics. Scattered light pass through the optical path of the laser, passing the same lenses of processing laser, and a semi-reflective mirror redirects the laser beam to the scanner, while simultaneously allowing the light emitted from the melt pool to be detected by sensors. This emitted light is then divided and directed to each sensor. Various co-axial detection designs might encompass multiple pyrometers, bi-wavelength or multi-wavelength pyrometers, and assorted imaging devices in either the visible or infrared spectrum. An example of a co-axial sensing system can be seen in Fig. \ref{fig:coaxiallaser}. With this method, we can reach really high sample rates of \SI{50}{\kilo\hertz}, but the observation area is typically limited to \qtyproduct{0.5 x 0.5}{\milli\metre}, making this method unsuitable to capture time evolution. Alterations in the melt pool's dimensions and luminosity/temperature can induce changes in the pyrometer's readings, facilitating the observation of melt pool consistency and any unusual signal shifts. This architecture was first developed by the Katholieke Universiteit Leuven and licensed by Concept Laser \cite{colosimo_-machine_2020, kruth_jean-pierre_feedback_2007, berumen_quality_2010}. This measurement approach has achieved outstanding results, with a lateral resolution of \SI{30}{\micro\metre} and a vertical resolution of \SI{7}{\micro\metre} \cite{fleming_tracking_2020}.
 \begin{figure}
     \centering
     \subfloat[\label{fig:coaxiallaser}]{
@@ -144,7 +144,7 @@ Other authors proposed and tested multi-view configurations, with two or more ca
     \subfloat[\label{fig:coaxialheatmap}]{
         \includegraphics[scale=0.5]{Images/coaxialmap.png}
     }
-    \caption[Co-axial sensing and results.]{A graphical representation of a system for co-axial sensing in L-PBF \cite{leach_-machine_2020} (a) and a corresponding in-situ topography reconstruction (b) \cite{neef_low_2014}.}
+    \caption[Co-axial sensing and results.]{A graphical representation of a system for co-axial sensing in L-PBF \cite{colosimo_-machine_2020} (a) and a corresponding in-situ topography reconstruction (b) \cite{neef_low_2014}.}
 \end{figure}
 \paragraph{Electronic imaging.} In EBM, the process gives rise to by-products like secondary and backscattered electrons, as well as x-rays. The electrons generated from the interaction between the beam and metal powder could be harnessed could be used to produce an electronic representation of the layer. Thus, one of the undesired effects outlined in Section \ref{sssec:electroninteractions} can be levered to extract valuable insights about the current state of the process. Using only back-scattered electrons electrons, \citeauthor{wong_pilot_2019} (2019) were able to reach a spatial resolution of \SI{60}{\micro\metre / pixel} We can see an example in Fig. \ref{fig:electronic1}. Moreover, we can use electron beam to scan the layers and metal surfaces, using the heat shield as an electron collector also during the melting phase as done by \citeauthor{arnold_operando_2020} (2020), thus it is a real-time measurement. This approach lead to a resolution of \numrange[range-phrase=--]{50}{100}\unit{\micro\metre / pixel}. An image from the study can be seen in Fig. \ref{fig:electronic2}.
 \begin{figure}
@@ -220,6 +220,10 @@ All the layers discussed so far have one common element: all of them are used fo
     \caption[X-ray video frame.]{Example of an in-situ x-ray video frame with relative defects identified \cite{paulson_correlations_2020}.}
     \label{fig:xray4}
 \end{figure}
+\textcolor{red}{The causes of the defects just described can be divided into four main categories:}
+
+
+
 % <<< End of Sensors for anomalies detection
 
 %%%%%

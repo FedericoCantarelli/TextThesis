@@ -240,7 +240,7 @@ Whereas LEAKY RELU is similar to RELU but incorporates a slight slope for negati
 \end{equation}
 where $k$ is usually in the order of $10^{-2}$.
 The convolution output will be a dense feature layer, which implies that this layer can serve as input for an ANN, which will have as many output neurons as classes in the original domain. Fig. \ref{fig:typicalcnn} shows an example of how a general CNN works.
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{Images/CNNtypical.png}
     \caption[CNN general structure.]{Graphical representation of a tipical CNN used for image classification \cite{giacomo_boracchi_convolutional_2021}.}
@@ -248,10 +248,76 @@ The convolution output will be a dense feature layer, which implies that this la
 \end{figure}
 % End of Deep learning, ANN and CNN
 
+
+% Deep Belief Network >>>
+%\subsection{Deep Belief Network}
+%\label{subsec:deepl}
+% <<< End of Deep Belief Network
+
 %%%%%
 %%%%%
 
 % Hot spot >>>
-\section{Hot-Spot Detection Using ML Algorithm: A-State-Of-The-Art Review}
+\section{Hot-Spot Detection Using ML Algorithm}
 \label{sec:hotspotstateart}
+This section will systematically review the literature on machine learning algorithms used for hot spot detection. The search strategy with the queries used, and the results are explained in detail in Appendix \ref{ap:research}. Table \ref{tab:slr} shows the papers selected for the literature review.
+\begin{table}
+\centering
+\begin{tabular}{llllll}
+\hline
+\tiny
+Author & \tiny
+  Year & \tiny
+  Process & \tiny
+  Sensor & \tiny
+  Proposed method & \tiny
+  Reference \\ \hline 
+  \tiny
+\begin{tabular}[c]{@{}l@{}}Bugatti M.,\\ Colosimo B. M.\end{tabular} & \tiny
+  2021 &
+    \tiny L-PBF & \tiny
+  \begin{tabular}[c]{@{}l@{}}High speed camera \\ (CMOS sensor)\end{tabular} &\tiny
+  \begin{tabular}[c]{@{}l@{}}k-means FD clustering,\\ SVM, ANN\end{tabular} & \tiny \cite{bugatti_towards_2022}
+   \\[0.3cm]
+ \tiny \begin{tabular}[c]{@{}l@{}}Colosimo B. M.,\\ Grasso M\end{tabular} & \tiny
+  2018 & \tiny
+  L-PBF & \tiny
+  \begin{tabular}[c]{@{}l@{}}High speed camera \\ (CMOS sensor)\end{tabular} & \tiny
+  Weighted PCA & \tiny \cite{colosimo_spatially_2018}
+   \\[0.3cm]
+\tiny \begin{tabular}[c]{@{}l@{}}Yan H., \\ Grasso M, \\ Paynabar K.,\\ Colosimo B. M.\end{tabular} & \tiny
+  2020 & \tiny
+  L-PBF & \tiny
+  \begin{tabular}[c]{@{}l@{}}High speed camera \\ (CMOS sensor)\end{tabular} & \tiny
+  \begin{tabular}[c]{@{}l@{}}Penalized \\ spatio-temporal \\ regression\end{tabular} & \tiny \cite{yan_real-time_2021}
+   \\[0.5cm]
+\tiny \begin{tabular}[c]{@{}l@{}}Grasso M.,\\ Laguzza V.\\ Semeraro Q.,\\ Colosimo B. M.\end{tabular} &
+  \tiny 2017 &
+  \tiny L-PBF &
+  \tiny \begin{tabular}[c]{@{}l@{}}High speed camera \\ (CMOS sensor)\end{tabular} & \tiny
+  K-Means Clustering & \tiny \cite{grasso_-process_2017}
+   \\[0.5cm]
+\tiny \begin{tabular}[c]{@{}l@{}}Baumgartl H.,\\ Toma J.,\\ Buettner R., \\ Merkel M.\end{tabular} & \tiny
+  2020 & \tiny
+  L-PBF & \tiny
+  Thermographic camera & \tiny
+  CNN & \tiny \cite{baumgartl_deep_2020}
+   \\[0.5cm]
+\tiny \begin{tabular}[c]{@{}l@{}}Mao Y., Lin Hui, \\ Xuan Yu C., Frye R., \\ Beckett D., Anderson K., \\ Jacquemetton L., \\ Carter F., Gao Z., \\ Liao W. , Choudhary A. N., \\ Ehmann K., Agrawal A.\end{tabular} & \tiny
+  2022 & \tiny
+  L-PBF & \tiny
+  Thermographic camera & \tiny
+  CNN & \tiny \cite{mao_deep_2023}
+   \\[0.8cm]
+\tiny \begin{tabular}[c]{@{}l@{}}Ye D., \\ Soon Hong G., \\ Zhang Y., Zhu K., \\ Ying Hsi Fuh J.\end{tabular} &
+  \tiny 2017 &
+  \tiny L-PBF &
+  \tiny \begin{tabular}[c]{@{}l@{}}Acoustic Sensor \\ (microphone)\end{tabular} &
+  \tiny DBN & \tiny \cite{ye_defect_2018}
+   \\[0.5cm] \hline
+\end{tabular}
+\caption{Summary of analyzed papers.}
+\label{tab:slr}
+\end{table}
+Furthermore, although it is beyond the scope of this thesis, it is worth mentioning that digital twins have been used in recent years in the scope of quality control. A digital twin is a model built using data streams to create a digital representation of a real-world asset to improve collaboration, information access, and decision-making. In other words, it combines simulation technology and real-time data. Using this technology, we can see when the printing process deviates from the simulated process and identify which process parameters to change to return to a normal condition.
 % <<< End of Hot spot 

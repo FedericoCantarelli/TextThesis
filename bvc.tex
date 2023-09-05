@@ -205,8 +205,24 @@ and $\mathbf{S}_{\phi, \lambda}$ is defined in \ref{eq:unbelcasino}.
 
 
 \subsection{Functional Principal Component Analysis}
-\textcolor{red}{\textit{Piccola introduzione sulla FPCA da \cite{ramsay_functional_2009}.}}
-
+Functional principal component analysis (FPCA), which is nothing other than PCA applied to functional data, is a widely used technique when dealing with functional data. Indeed, when dealing with functional data, it is common practice to look for features that characterize typical functions. For example, we might be interested in the sinusoidal nature of periodic data \cite{ramsay_functional_2006}. When we talked about classical PCA, the linear combination consisted of a vector of weights and the observations of the dataset. In the case of FPCA, however, we have to translate this approach into the domain of functions, thus, into the domain of the "continuum". Thus, the \ref{eq:pcaf}, will become 
+\begin{equation}
+    f_i= \int \beta y_i = \int \beta(t) y_i(t) dt
+\end{equation}
+The weights $\lambda$ now become functions $\beta(t)$. 
+\begin{figure}
+    \centering
+    \subfloat[\label{fig:mediafpca}]{
+        \includegraphics[scale=0.2]{Images/canadamedie.png}
+    }
+    \qquad
+    \subfloat[\label{fig:canadapc}]{
+        \includegraphics[scale=0.28]{Images/PCs.png}
+    }
+    \caption[Functional Principal Component Analysis.]{Mean temperature curve of the 35 different stations over the considered time period (a) and the first four PCs with relative proportion of explained variance (b) \cite{ramsay_functional_2006, ramsay_functional_2009}.}
+    \label{fig:FPCA}
+\end{figure}
+As in PCA, each weight function has the task of capturing the greatest amount of variance and being orthogonal to all other weight functions. Thus, every weight function will have a decreasing associated amount of explained variance. For a more in-depth explanation of the calculation method, the reader can refer to \citeauthor{ramsay_functional_2006} (2006). Consider the example in Fig. \ref{fig:FPCA}.  The dataset consists of daily temperature data recorded at 35 locations in Canada from 1960 to 1994. Fig. \ref{fig:mediafpca} shows the 35 annual mean temperature curves. We can see that the first weight function, although always strictly greater than zero, has values in the winter months up to four times higher than in the summer months. Moreover, only the first PC explains 89.3\% of the total variance. This means that temperatures in the winter tend to be much more 'variable' than those in the summer. Thus, weather stations with high scores will have warmer than usual winters and warm summers, and the two highest scores are, in fact, assigned to Vancouver and Victoria on the Pacific Coast. On the other hand, the largest negative score goes to Resolute in the High Arctic. On the other hand, the second PC shows similar overall behavior to the first PC but is not strictly greater than zero. This means it corresponds to a measure of temperature uniformity throughout the year. For example, the highest score goes to Prince Roupert, a city on the Pacific coast, characterized by a slight temperature difference between the summer and winter. We can interpret each of the PCs just as in the PCA. However, as we can see from Fig. ef {fig:canadapc}, the third PC helps to explain only 1.6\% of the total variance, so it is much less significant.
 % <<< End of Functional Data Analysis
 
 %%%%%
@@ -371,7 +387,7 @@ Thus, the more the $h$-th harmonic is relevant in the explanation of features oc
 As did in Section \ref{subsec:irradiance}, the metric $d(\cdot, \cdot)$ used is Euclidean distance, the total number of bootstrap $B=50$, and the dimension $n$ of the Voronoi tessellation ranging from 50 to 1250. As we already know, the optimal $n$ will be found by using the scree plot.
 
 
-\subsection{Deviation Index in Lattice Structure Cells}
+\subsection{One Last Thing}
 \label{subsec:devcell}
 In previous section, I have chosen to provide an example of how functional data and clustering algorithms can be used to conduct a layer-wise temperature profile analysis. However, these concepts can be readily adapted to other scenarios, including, for instance, particular application in three dimensions. In this section, I want to go beyond the primary domain of the thesis. I want to suggest how the algorithm could also be leveraged for the classification of functional data in three dimensions. A possible application in three dimensions could be the clustering of functional data regarding the deviation of cell profiles in lattice structures. Recall that in 3 dimension, Voronoi regions are represented as polyhedra, like in Fig. \ref{fig:3dvoronoi}.
 
@@ -418,9 +434,14 @@ At the conclusion of step 5 in Fig. \ref{fig:colosimofunctional}, as outlined in
 
 
 %>>> Simulation Study
-%\section{Simulation Study}
-%\label{sec:simstudy}
-%\textcolor{red}{Se riesco a fare una simulazione con esito positivo la inserisco.} I dati che mi servono per fare la simulazione posso prenderli da qua \cite{anandan_kumar_faster_2021, burkhardt_thermo-mechanical_2022}.
+\section{Simulation Study}
+\label{sec:simstudy}
+\textcolor{red}{Algoritmo su dati simulati}
+\begin{enumerate}
+    \item Spiegazione analitica dei profili termici. I dati li posso prendere da qua \cite{criales_temperature_2017, burkhardt_thermo-mechanical_2022, soundararajan_review_2021, bayat_fundamental_2021, ji_analytical_2022} (ancora da leggere).
+    \item Risultati su diversi scenari per grandezza, forma e disposizione delle aree
+    \item Performance del codice (tempo di esecuzione e variabilità del tempo di esecuzione) ->  Forse può andare anche in Appendice B
+\end{enumerate}
 % <<< End of Simulation Study
 
 %As we will see in Section \ref{sec:bvc}, the number $K$ of clusters is an input of the algorithm, making hierarchical clustering not suitable for our purposes. But before delving into the algorithm's description, I also want to explain the concept of \textit{bagging} for clustering. It is based on the concept of bootstrapping. Bootstrapping is a resampling technique that helps in finding more reliable results from a clustering algorithm. In the algorithm, we will perform multiple clustering "rounds" in order to find a frequency distribution of the belongings of the observation to a specific cluster. The final cluster label for each observation will be the "most probable correct result" by majority voting.

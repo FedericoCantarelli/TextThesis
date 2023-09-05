@@ -117,7 +117,7 @@ def return_cluster_mapping(reference, testing):
         dict: Return the mapping_dict in the format {bootstra_label:reference_label}
     """
 
-    # Contingency matrix automatically reorder cluster labels
+    \\# Contingency matrix automatically reorder cluster labels
     matrix = contingency_matrix(testing, reference)
 
     mapping_dict = dict()
@@ -193,11 +193,11 @@ class Structure:
         self.time = self.profiles[0].time
         self.fps = self.profiles[0].fps
 
-    # def print_df(self):
-    #     print(self.df_coordinates)
+    \\# def print_df(self):
+    \\#     print(self.df_coordinates)
 
-    # def print_dm(self):
-    #     print(self.distance_matrix)
+    \\# def print_dm(self):
+    \\#     print(self.distance_matrix)
 
     def index_from_coordinates(self, coordinates: tuple):
         return (int(self.df_coordinates[self.df_coordinates.t == coordinates].index.values[0]))
@@ -226,59 +226,59 @@ class Structure:
 
         print("Bootstrapping...")
 
-        # Iterate the procedure b times
+        \\# Iterate the procedure b times
         for b in range(bootstrap):
 
-            # Print progress bar as UI
+            \\# Print progress bar as UI
             progress_bar(b/bootstrap)
 
-            # List for selected centroid
+            \\# List for selected centroid
             selected_centroid_voronoi = []
 
-            # Select n centroid for voronoi tesselation
+            \\# Select n centroid for voronoi tesselation
             for i in range(n):
-                # Select random index
+                \\# Select random index
                 num = np.random.randint(len(self.profiles))
 
-                # If selected index is selected for the first time, append to the list
+                \\# If selected index is selected for the first time, append to the list
                 if num not in selected_centroid_voronoi:
                     selected_centroid_voronoi.append(num)
 
-                #  If it is already in the list, iterate untill a new centroid is selected
+                \\#  If it is already in the list, iterate untill a new centroid is selected
                 else:
                     while num in selected_centroid_voronoi:
                         num = np.random.randint(len(self.profiles))
                     selected_centroid_voronoi.append(num)
 
-            # Dictionary for grouping profiles to the closest centroid
-            # format {profile:closest centroid}
+            \\# Dictionary for grouping profiles to the closest centroid
+            \\# format {profile:closest centroid}
             dictionary = dict()
 
-            #  Iterate over all profiles and assign them to the closest centroid
+            \\#  Iterate over all profiles and assign them to the closest centroid
             for i in range(len(self.profiles)):
                 index_min = np.argmin(
                     self.distance_matrix[i, selected_centroid_voronoi])
                 dictionary[i] = selected_centroid_voronoi[index_min]
 
-            # Group the previous dictionary in the format
-            # {centroid: closest profiles}
+            \# Group the previous dictionary in the format
+            \# {centroid: closest profiles}
             grouped_dict = dict()
 
-            # Perform grouping
+            \# Perform grouping
             for key, value in dictionary.items():
                 if value not in grouped_dict:
                     grouped_dict[value] = [key]
                 else:
                     grouped_dict[value].append(key)
 
-            # Compute representative function for each centroid
+            \# Compute representative function for each centroid
             avg_dictionary = dict()
 
-            # Compute
+            \# Compute
             centroid_coordinates_list = [self.coordinates_from_id(
                 key) for key in grouped_dict.keys()]
 
-            # Find maximum distance and minimum distance between al the centroids
+            \# Find maximum distance and minimum distance between al the centroids
             temp_matrix = euclidean_distance_matrix(
                 centroid_coordinates_list, centroid_coordinates_list)
             dist_max_centroid = np.max(temp_matrix)
@@ -288,29 +288,29 @@ class Structure:
 
             del temp_matrix
 
-            #  Compute sigma
+            \#  Compute sigma
             sigma = dist_max_centroid/dist_min_centroid
 
-            # Compute covariance matrix for bivariate normal distribution
+            \# Compute covariance matrix for bivariate normal distribution
             cov_matrix = sigma**2*np.identity(2)
 
-            # Compute representetive function for each centroid
+            \# Compute representetive function for each centroid
             for j in grouped_dict.keys():
 
-                # Gaussian weights centered in Zi
+                \# Gaussian weights centered in Zi
                 means = list(self.coordinates_from_id(j))
 
-                # Compute the weight
+                \# Compute the weight
                 bivariate_gaussian = multivariate_normal(
                     mean=means, cov=cov_matrix)
 
-                # Keeo track of profile
+                \# Keeo track of profile
                 temp_list = []
 
-                # Keep track of weights
+                \# Keep track of weights
                 weights_list = []
 
-                # Multiply each profile for the correspondent weight
+                \# Multiply each profile for the correspondent weight
                 for index in grouped_dict[j]:
                     pos = self.coordinates_from_id(index)
                     w = bivariate_gaussian.pdf(pos)
@@ -319,11 +319,11 @@ class Structure:
 
                 temp_array = np.array(temp_list)
 
-                # Compute final dictionary
+                \# Compute final dictionary
                 avg_dictionary[j] = np.sum(
                     temp_array, axis=0)/sum(weights_list)
 
-            # Create a FData object
+            \# Create a FData object
             fda_matrix = np.zeros(
                 (len(avg_dictionary.keys()), self.time * self.fps))
             for i, key in enumerate(avg_dictionary.keys()):
@@ -332,36 +332,36 @@ class Structure:
             fd = FDataGrid(fda_matrix,
                            np.arange(0, self.time, 1/self.fps))
 
-            #  Compute FPCA
+            \#  Compute FPCA
             fpca = FPCA(n_components=p)
 
-            # Compute scores
+            \# Compute scores
             fd_score = fpca.fit_transform(fd)
 
             df_score = pd.DataFrame(fd_score, columns=[
                                     "s" + str(i+1) for i in range(p)])
 
-            # Keep track of centroid for debugging reason
+            \# Keep track of centroid for debugging reason
             df_score["centroid"] = avg_dictionary.keys()
 
-            # Find clusterin cluster
+            \# Find clusterin cluster
             kmeans = KMeans(n_clusters=k,
                             n_init="auto").fit(df_score[df_score.columns[:-1]])
 
-            # Find the mapping dictionary for centroid and cluster labels
-            # The format is {centroid:cluster label}
+            \# Find the mapping dictionary for centroid and cluster labels
+            \# The format is {centroid:cluster label}
             mapping_dict = dict()
             for key, cluster in zip(grouped_dict.keys(), kmeans.labels_):
                 mapping_dict[key] = cluster
 
-            #  Find the single site to centroid mapping dictionary
+            \#  Find the single site to centroid mapping dictionary
 
             cluster_dict = dict()
             for key in grouped_dict.keys():
                 for i in grouped_dict[key]:
                     cluster_dict[i] = key
 
-            #  Sort the dictionary according in order to have the all the sites in order
+            \#  Sort the dictionary according in order to have the all the sites in order
             sorted_cluster_dict = dict(sorted(cluster_dict.items()))
 
             df["boot_" + str(b)] = sorted_cluster_dict.values()
@@ -369,24 +369,24 @@ class Structure:
 
             df.drop(["boot_" + str(b)], axis=1, inplace=True)
 
-        # Perform cluster matching using contingency matrix
+        \# Perform cluster matching using contingency matrix
         print("\nCluster matching...")
 
-        # Save first bootstrap as reference
+        \# Save first bootstrap as reference
         reference = df.loc[:, "b_0"]
 
-        # For all the remaining bootstraps do clusters matching
+        \# For all the remaining bootstraps do clusters matching
         for col in df.columns[1:]:
 
-            # Find the map
+            \# Find the map
             mapping = return_cluster_mapping(reference, df[col])
 
-            # Replace the labels of the old cluster to the label of the new cluster
+            \# Replace the labels of the old cluster to the label of the new cluster
             df[col] = df[col].replace(mapping)
 
         df_clust = pd.DataFrame()
 
-        #  Find percentage of each site to be labeled with that specific label
+        \#  Find percentage of each site to be labeled with that specific label
         for j in range(k):
             list_temp = []
             for i in range(df.shape[0]):
@@ -399,19 +399,19 @@ class Structure:
         for i in range(df_clust.shape[0]):
             final_cluster.append(np.argmax(df_clust.iloc[i].values))
 
-        #  Add final label to the dataframe
+        \#  Add final label to the dataframe
         df_clust["label"] = final_cluster
 
-        #  Compute spatial entropy and add column
+        \#  Compute spatial entropy and add column
         df_clust["entropy"] = get_spatial_entropy(df_clust)
 
-        #  Compute normalized spatial entropy and add column
+        \#  Compute normalized spatial entropy and add column
         df_clust["normalized_entropy"] = df_clust["entropy"]/np.log10(k)
 
-        #  Add coordinates to final dataframe
+        \#  Add coordinates to final dataframe
         df_clust = pd.concat([df_clust, self.df_coordinates], axis=1)
 
-        # Return clustered dataframe and average normalized entropy
+        \# Return clustered dataframe and average normalized entropy
         return df_clust, np.sum(df_clust.normalized_entropy)/len(self.profiles)
 
     def evaluate(self, ground_truth: list) -> tuple:

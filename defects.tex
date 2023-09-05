@@ -25,7 +25,7 @@ Defects in PBF processes can be divided into five main classes: porosity defects
     \caption[Defect examples in PBF.]{Pores, micro-void and cracks in a specimen of FeCrCoMnNi (a) \cite{mostafaei_defects_2022}, an acircular pores on a specimen of Ti–6Al–4V (b) \cite{tammas-williams_xct_2015}, an example of delamination in SLS (c) \cite{sames_metallurgy_2016} and the balling effect in stainless steal powder (d) \cite{li_balling_2012}.}
 \end{figure} 
 Porosity is characterized by empty spaces within the mass of the fused material. These voids can appear within a layer, between adjacent layers, or on the surface of the printed piece. Voids most frequently occur within the layer and can vary in size, form, and distribution. The primary causes for these pores include incomplete fusion in the powder bed (lack of fusion or LOF), keyhole effects, and encapsulated gas. We can also differentiate between round and non-round pores. Some examples of round pores can be seen in Fig. \ref{fig:poris}. The elongated voids observed between layers are labeled as 'acicular pores'; their stretched form and larger size recognize them. For example, the acircular pore in Fig. \ref{fig:acircular} has a measure of \SI{20}{\micro\metre}. Pores can either be dispersed throughout the material or primarily situated between the inner patterned area and the outer boundary, known as under-skin pores. Pores can also appear on the exterior surface, typically termed 'surface porosity'.
-\paragraph{Residual stresses, cracking, and delamination.} In material science, residual stresses are internal tensions that remain in the finished piece once the printing phase is complete. In PBF, these stresses can arise from two different causes: the thermal gradient mechanism and the cool-down phase of molten top layers \cite{mercelis_residual_2006}. Cracking phenomena occur as a consequence of stress relief when the tensile stress exceeds the ultimate tensile strength of the solid material. When the tension is suddenly released, a secondary crack can be generated from the main crack. Fig. \ref{fig:poris} shows an example of this kind of defect. On the other hand, delamination happens when cracks originate and propagate between adjacent layers (inter-layer cracking). Delamination occurs when the residual stresses exceed the binding linkage between the top layer and the previous one. Most of the time, delamination occurs from the partial disconnection of the part from the baseplate \cite{sames_metallurgy_2016}, as in Fig. \ref{fig:delamination}.
+\paragraph{Residual stresses and delamination.} In material science, residual stresses are internal tensions that remain in the finished piece once the printing phase is complete. In PBF, these stresses can arise from two different causes: the thermal gradient mechanism and the cool-down phase of molten top layers \cite{mercelis_residual_2006}. Cracking phenomena occur as a consequence of stress relief when the tensile stress exceeds the ultimate tensile strength of the solid material. When the tension is suddenly released, a secondary crack can be generated from the main crack. Fig. \ref{fig:poris} shows an example of this kind of defect. On the other hand, delamination happens when cracks originate and propagate between adjacent layers (inter-layer cracking). Delamination occurs when the residual stresses exceed the binding linkage between the top layer and the previous one. Most of the time, delamination occurs from the partial disconnection of the part from the baseplate \cite{sames_metallurgy_2016}, as in Fig. \ref{fig:delamination}.
 \begin{figure}
     \centering
     \subfloat[\label{fig:lackofsupport}]{
@@ -237,13 +237,62 @@ All the layers discussed so far have one common element: they are used for monit
 % Temperature Anomalies and Hot Spots>>>
 \section{Temperature Anomalies and Hot Spots}
 \label{sec:hotspot}
-As discussed in \citeauthor{williams_situ_2019} (2019), almost all major quality characteristics of the final part and its mechanical performance depend on the thermal history. A specific defect characterized by anomalous temperature profiles is known as hot spot (HS). The primary cause of these defects is the laser beam being repeatedly focused on thermally insulated regions. These are areas predominantly surrounded by powder and lacking any support structure to ensure the proper cooling down phase, as explained in Section \ref{sec:pbf_proc}, but also overhanging walls and sharp edges. This would result in a very localized overheating of the powder bed, leading to the following defects \cite{bugatti_towards_2022}:
+As discussed in \citeauthor{williams_situ_2019} (2019), almost all major quality characteristics of the final part and its mechanical performance depend on the layer's thermal history. This is because temperatures in PBF systems reach very high values. The preheating phase of the powder alone can range from \SI{300}{\degreeCelsius} (aluminide) up to \SI{1100}{\degreeCelsius} (titanium aluminide) in EBM \cite{milewski_additive_2017}. Moreover, the surface layer temperature is continually changing throughout the build process. Process parameters do not consider these variations, which can result in increased porosity and differences in local microstructure and mechanical properties, undermining the mechanical features of the final part. In \citeauthor{williams_situ_2019} (2019), the authors acquired high-speed videos of the melt-poool region during the printing process of a small cylinder. The video was recorded at \SI{50000}{fps}. The images were acquired with a size \qtyproduct{128x128}{pixels} and a resolution of \SI{20}{\micro\metre / pixel}, using two different wavelengths (\SI{700}{\nano\metre} and \SI{950}{\nano\metre}, so that they could compute temperature using the method described in \citeauthor{hooper_melt_2018} (2018). Each cylinder layer takes approximately \SI{1}{\second} to scan. The cylinder was built with 316L stainless steel using a Renishaw AM250 machine. Fig. \ref{fig:temperatureprofile} shows an example of a temperature profile. The maximum occurs when the laser scans over the measurement point. Due to the sensor's poor temporal and spatial resolution, this cannot be considered the temperature value of the melt pool. However, it is a spatially and temporarily weighted average peak point. Inter-layer cooling time (ILCT) is a significant parameter, the time elapsed between two consecutive peaks, i.e., between two consecutive scan phases. The minimum peaks are recorded twice per layer, as the printer has only one powder tank. The first minimum occurs when the blade returns to the reservoir to draw new powder, and the second occurs once the new powder layer is deposited. As proof that the layer temperatures are constantly changing, we can see an increase in pixel intensity after the second minimum. This is because the newly spread powder surface has a higher emissivity than the consolidated layer below, producing a higher IR emission intensity for a given temperature.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{Images/temperature profile.png}
+    \caption[Temperature profile.]{Annotated plot of the thermal cycle experienced at a location on the part surface during three layers of a build \cite{williams_situ_2019}.}
+    \label{fig:temperatureprofile}
+\end{figure}
+The authors proposed the following experiment to test the impact of ILCT and temperature peaks on the final piece. Eight short cylinders, each with a diameter of 8 mm and a height of 20 mm, were constructed alongside a taller cylinder measuring 60 mm in height. During the initial 20 mm of the building process, while all the cylinders were being scanned, the ILCT was approximately 20 seconds. In the middle segment, when only the tall cylinder was undergoing scanning, the ILCT was approximately 11 seconds. At a height of 40 mm, the author introduced eight short cylinders of identical dimensions, using a 5 W laser power to extend the scanning duration, resulting in an ILCT of approximately 20 seconds. Due to the significantly reduced laser power (the default laser power on Reinshaw AM250 is 200 watts), no melting occurred, and only a feeble sintering effect occurred. Fig. \ref{fig:williamporosities} shows microscope images of the etched microstructure with a 20$\times$ objective lens in the lower, middle, and upper sections of the varied ILCT.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/differntisezioni.png}
+    \caption[Microstructure of reference cylinder.]{Etched OM images of the microstructure taken at the center height of each of the three regions: lower (10 mm), middle (30 mm), and upper (50 mm). The percentage porosity of each region is annotated above (not a measure of porosity in the image, but the region as a whole) \cite{williams_situ_2019}.}
+    \label{fig:williamporosities}
+\end{figure}
+ILCT and maximum temperature affect the printed cylinder's porosity and microstructure. We can see from Fig. \ref{fig:williamporosities} that the middle section has much lower porosity than the other two sections. Pores can be explained by areas of lack of fusion (LOF), areas where the powder has not appropriately melted. Moreover, the lower section is characterized by many fine grains with few coarse grains. In contrast, the middle section exhibits a more significant fraction of coarse grains. Finally, the grain structure of the upper section appears very similar to that of the middle section. Average grain sizes were found to be of \num{20.4}, \num{23.9}, and \num{23.7} \unit{\micro\metre} for the lower, middle, and upper sections, respectively. Finally, the authors used the Vickers hardness test to measure the mechanical properties of the printed part. The test results can be seen in table \ref{table:hard}. Although these differences are small, the values suggest longer ILCT results in higher hardness values. Confidence intervals suggest that the rise in hardness between the lower and middle sections is likely accurate. Nevertheless, distinctions in hardness between the central and upper segments might not be accurate, and the segments could share the same actual mean value.
+\begin{table}
+\footnotesize
+    \centering 
+    \begin{tabular}{|l l l l|}
+    \hline
+    %\rowcolor{bluepoli!40} % comment this line to remove the color
+    Section & \makecell{Mean hardness \\(HV10)} & \makecell{95\% upper \\confidence bound} & \makecell{95\% lower \\ confidence bound} \T\B \\
+    \hline \hline
+    Lower & 217.8 & 219.0 & 216.7  \T\B \\ 
+    Middle & 213.3 & 214.5 & 212.1  \T\B \\ 
+    Upper & 214.3 & 215.7 & 223.0  \T\B \\ 
+    
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Mean hardness values and 95\% upper and lower confidence bounds for values measured in each of the three sections \cite{williams_situ_2019}.}
+    \label{table:hard}
+\end{table}
+The residual heat is another phenomenon involving the anomalous behavior of temperature profiles. Indeed, after powder recoating, the new, not yet solidified layer is affected by the residual heat of the previous layer. This heat transfer between layers is essential for the printing process because it allows, through the partial melting of the new layer, a better adhesion between the layers and a higher resolution of the finished piece. However, this phenomenon also affects material properties, such as porosity or microstructures. Fig. \ref{fig:hotspottini} shows an example of residual heat phenomenon, and Fig. \ref{fig:hstermo} shows an example of an OOC residual heat.
+\begin{figure}
+    \centering
+    \subfloat[\label{fig:residualheat}]{
+        \includegraphics[scale=0.20]{Images/residualHS.png}
+    }
+    \\
+    \subfloat[\label{fig:hstermo}]{
+        \includegraphics[scale=0.25]{Images/HStermo.png}
+    }
+    \quad
+    \subfloat[\label{fig:hsrisultati}]{
+        \includegraphics[scale=0.25]{Images/risultatiHS.png}
+    }
+    \caption[Residual heat.]{Examples of residual heat phenomenon. The phenomenon of residual heat (a), zoom on the lower left side showing an abnormal residual heat situation (b), and the results on the finished part (c). The red arrow indicates the most critical part in both photos \cite{boone_thermal_2018}.}
+    \label{fig:hotspottini}
+\end{figure}
+This defect characterized by anomalous area temperature profiles is known as hot spot (HS). The primary cause of these defects is the laser beam repeatedly scanning of thermally insulated regions. These are areas predominantly surrounded by powder and lacking any support structure to ensure the proper cooling down phase, as explained in Section \ref{sec:pbf_proc}, but also overhanging walls and sharp edges. Thus, the localized printing parameters, such as the scan strategy and the direction of heat extraction (depending on geometry), can explain the observed phenomena of hot spot and dross shifting. Furthermore, as demonstrated in \citeauthor{moshiri_performance_2023} (2023), geometric features can also lead to the formation of HS, especially for parts suspended without supports to aid the cooling process. The localized overheating of the powder bed leads to the following defects \cite{bugatti_towards_2022}:
 \begin{itemize}
-    \item \textbf{High surface roughness:} overheated areas can lead to melting unwanted areas of powder and partially melted powder particles attach to the surface. This will result into small melted powder on th surface of the final object, thus increasing its roughness;
-    \item \textbf{Change in microstructure of the material:} normal melting zone are characterized by a high cooling rate that leads to finer grain formation, while overheating regions tend to develop a coarser microstructure due to the slower cooling transient;
-    \item \textbf{Porosity formation:} if the region is already hot, new laser scans may lead to material vaporization, hence unstable keyhole formation which is often correlated with porosity defects.
-\end{itemize} An example of these defects can be seen in Fig. \ref{fig:cane}.
-
+    \item \textbf{High surface roughness:} overheated areas can lead to melting unwanted areas of powder, and partially melted powder particles attach to the surface. This will result in small melted powder on the surface of the final object, thus increasing its roughness;
+    \item \textbf{Change in material microstructure:} normal melting zones are characterized by a high cooling rate that leads to finer grain formation, while overheating regions tend to develop a coarser microstructure due to the slower cooling transient;
+    \item \textbf{Porosity formation:} if the region is already hot, new laser scans may lead to material vaporization. Hence, unstable keyhole formation is often correlated with porosity defects.
+\end{itemize} An example of defects generated by hot-spot can be seen in Fig. \ref{fig:cane}.
 \begin{figure}
     \centering
     \subfloat[\label{fig:dio}]{
@@ -253,6 +302,7 @@ As discussed in \citeauthor{williams_situ_2019} (2019), almost all major quality
     \subfloat[\label{fig:cane}]{
         \includegraphics[scale=0.4]{Images/printedhs.png}
     }
-    \caption[Examples of hot spot defects.]{Examples of a complex shape CAD model with the position of observed hot spot (a) and relative observed defects in printed part (b) \cite{grasso_-process_2017}.}
+    \caption[Examples of hot spot defects.]{Examples of a complex shape CAD model with the position of the observed hot spot (a) and relative observed defects in printed part (b) \cite{grasso_-process_2017}.}
 \end{figure}
+A hot-spot region remains hot (bright) for longer and has a slower cooling drift than standard areas. Referring to Fig. \ref{fig:temperatureprofile}, the slope of the thermal profile after the maximum peak will be lower. In mathematical terms, the velocity, hence the first derivative of the heat profile with respect to time, will be lower. Therefore, a conventional camera that detects pixel intensity with sufficient temporal resolution is more than sufficient to identify these anomalies, as in \citeauthor{grasso_-situ_2021} (2020). \citeauthor{boone_thermal_2018} (2018) employed an optical sensor for video-imaging in the NIR range. The main advantage is that it filters out specific wavelengths and reduces the dynamic range of the video compared to traditional optical video imaging methods.
 % <<< End of Temperature Anomalies and Hot Spots

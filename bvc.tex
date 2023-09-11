@@ -1,18 +1,11 @@
-As discussed in the previous chapter, most of the solutions found in the literature rely on deep learning models. However, these models have a significant drawback: they are very complex and have a lot of parameters, meaning they excel at predicting the model's output but are not equally suitable for explaining the phenomenon. Indeed, the deep learning model can be seen as a black-box model. We can use packages such as Shap, shown in Fig. \ref{fig:shap}, available as a Python package. SHAP (SHapley Additive exPlanations) utilizes game theory principles to explain the outputs of any machine learning model. It bridges the gap between optimal contribution distribution and localized explanations by employing the traditional Shapley values from game theory and their associated extensions as described by \citeauthor{lundberg_unified_2017} (2017).
-\begin{figure}
-    \centering
-    \includegraphics[width=0.7\textwidth]{Images/shap.png}
-    \caption[SHAP python package.]{Example of the SHAP python package \cite{scott_lundberg_shap_2023}.}
-    \label{fig:shap}
-\end{figure}
-In this section, I will propose an approach for clustering areas within the printing plate with abnormal behaviors. With this approach, we should be able to cluster temperature profiles that exhibit similar behavior, considering the distance in the printing plane. This analysis can be done pixel-wise, window-wise, or cell-wise in the case of a lattice structure. "In general, it can be applied to any functional data referenced by a lattice in $\mathbb{R}$, $\mathbb{R}^2$ or $\mathbb{R}^3$. This algorithm is based on functional data. The analysis of functional data allows us to gain a comprehensive and detailed understanding of the anomalies, which would enable us to discern if there are specific zones on the print plane behaving irregularly and to understand how hot spots might influence the mechanical properties of the printed part, given the fact that we have a functional knowledge of those phenomena. In Section \ref{sec:fda}, I will provide a brief introduction to functional data analysis, in Section \ref{sec:bvc}, I will give a detailed explanation of the Bagging Voronoi algorithm proposed by \citeauthor{secchi_bagging_2013} (2013) for geo-referenced functional data clustering, and in Section \ref{sec:bcv-cases} I will present two successful case studies of algorithm application.
+This chapter presents a novel approach proposed by the author for clustering building plate areas characterized by similar thermal profiles, firstly described in \citeauthor{secchi_bagging_2013} (2013). In general, it can be applied to any functional data referenced by a lattice in $\mathbb{R}$, $\mathbb{R}^2$ or $\mathbb{R}^3$. The analysis of functional data allows us to gain a comprehensive and detailed understanding of the anomalies and the thermal history, which would enable us to discern if there are specific zones on the print plane behaving irregularly and to understand how hot spots might influence the mechanical properties of the printed part, given the fact that we have a functional knowledge of those phenomena. Section \ref{sec:fda} briefly introduces functional data analysis. Section \ref{sec:bvc} gives a detailed explanation of the Bagging Voronoi algorithm for geo-referenced functional data clustering, and Section \ref{sec:irradiance} presents a successful case study of the algorithm application.
 
 % Functional Data Analysis >>>
 \section{Functional Data Analysis}
 \label{sec:fda}
-This section will discuss Functional Data Analysis (FDA) and Functional Principal Component Analysis (FPCA). I will provide a brief overview to give readers the foundational knowledge needed to understand the algorithm described in Section \ref{sec:bvc}. The material of this section comes mainly from \citeauthor{ramsay_functional_2006} (2006) and \citeauthor{ramsay_functional_2009} (2009).
+This section discusses Functional Data Analysis (FDA) and Functional Principal Component Analysis (FPCA). It provides a brief overview to give readers the foundational knowledge needed to understand the algorithm described in Section \ref{sec:bvc}. This section is based mainly on \citeauthor{ramsay_functional_2006} (2006) and \citeauthor{ramsay_functional_2009} (2009).
 
-Functional data are measurable observations of a given phenomenon that we can assume, with a fair degree of certainty, that can be represented as an analytic function. Indeed, although each observation is a single discrete value, these values reflect the smooth behavior of the generative function of those observations. Fig. \ref{fig:bambine} shows the height data in \unit{\centi\metre} of 10 girls measured at 31 different temporal instants in the Berkeley Growth Study. We can see the smooth behavior typical of analytic functions, suggesting the existence of a height function. Like all mathematical functions, the height function has interesting properties, including continuity and the possibility to compute function derivatives. Indeed, we can calculate the second derivative, the growth acceleration, as Fig. \ref{fig:accelerazione} shows.
+Functional data are measurable observations of a given phenomenon that we can assume, with a fair degree of certainty, that a function can describe it. Indeed, although each observation is a single discrete value, these values reflect the smooth behavior of the generative function of those data. Fig. \ref{fig:bambine} shows the height data in \unit{\centi\metre} of 10 girls measured at 31 different temporal instants in the Berkeley Growth Study. We can see the smooth behavior typical of analytic functions, suggesting a "height" function, relating height to girls' age. Like all mathematical functions, the height function has interesting properties, including continuity and the possibility to compute function derivatives. Indeed, we can calculate the first derivative of the height function and interpret it as the growth velocity. Similarly, we can calculate the second derivative, the growth acceleration, as Fig. \ref{fig:accelerazione} shows.
 \begin{figure}
     \centering
     \subfloat[\label{fig:bambine}]{
@@ -25,11 +18,11 @@ Functional data are measurable observations of a given phenomenon that we can as
     \caption[Functional data]{The heights of 10 girls measured at 31 ages (a) and their estimated accelerations (b) \cite{ramsay_functional_2006}. The dotted line is the cross-sectional mean acceleration.}
     \label{fig:tuttoinsieme}
 \end{figure}
-Even if the height observations are taken nominally at the same age for each girl, it is optional for this to happen. Indeed, the points at which the function is observed may change from one subject to another. It can be helpful in quality control that relies on sensors we discussed in Section \ref{sec:sensoriniiniini} to deal with missing values. The signals transmitted by these sensors may be affected by disturbances that prevent the observed quantity from being correctly measured, causing discontinuities or missing values. It is also important to note that the FDA does not suffer from the problems of classical multivariate methods. It can also be used when the number of variables $p$ is larger than the available sample size $n$. In the case of Fig. \ref{fig:tuttoinsieme}, we have $p=31$ and $n=10$. In general, the goal of the FDA is to represent data as functions, to provide a representation that helps analyze and highlight the various characteristics of the collected data. This allows us to explain patterns of variation in the data and compare data containing different sets of observations of the same function or functions for a common set of replicates. We can write each functional observation as the sum of a functional component and a random component that we will call noise. Formally, we can write every profile $y_j$ as 
+Even if the height observations are taken nominally at the same age for each girl, it is not strictly needed. Indeed, the points at which the function is observed may change from one subject to another. It can be helpful in quality control that relies on sensors we discussed in Section \ref{sec:sensoriniiniini} to deal with missing values due, for example, to the obstruction of the off-axis sensor by the recoating blade. Furthermore, the signals transmitted by these sensors may be affected by disturbances that prevent the observed quantity from being correctly measured, causing discontinuities or missing values. It is also important to note that the FDA does not suffer from the problems of classical multivariate methods. It can also be used when the number of variables $p$ is larger than the available sample size $n$. In the case of Fig. \ref{fig:tuttoinsieme}, we have $p=31$ and $n=10$. In general, the goal of the FDA is to represent data as functions, to provide a representation that helps to analyze and highlight various characteristics of the collected data. This allows us to explain patterns of variation in the data and compare data containing different sets of observations of the same function or functions for a standard set of replicates. We can write each functional observation as the sum of a functional component and a random component that we will call noise. Formally, we can write every observed profile $y_j$ as 
 \begin{equation}
     y_j = f(t_j) + \varepsilon_j \qquad \varepsilon_j\sim N(0, \sigma_j^2)
 \end{equation}
-We can approximate the unknown functional component as a linear combination of a functional basis. A basis function system is a set of known functions $\phi_k$ such that they are mathematically independent of each other and have the property that they can arbitrarily well approximate any function by taking a weighted sum of a sufficiently large number $K$ of these functions.
+We can approximate the unknown functional component as a linear combination of a functional basis. A basis function system is a set of known functions $\phi_k$ such that they are mathematically independent of each other and have the property that they can arbitrarily well approximate any function by taking a weighted sum (linear combination) of a sufficiently large number $K$ of these functions.
 \begin{equation}
 \label{eq:linear}
     \hat{f}(t)=\sum_{k=1}^K c_k \phi_k(t)
@@ -39,7 +32,7 @@ Now, let $\mathbf{c}$ indicate the vector of length $K$ of the coefficients $c_k
 \label{eq:matrice}
     \hat{f}(t)=\mathbf{c}'\bm{\phi}=\bm{\phi}'\mathbf{c}
 \end{equation}
-When $K=n$, we have a limit case called exact representation or interpolation. It is a limit situation because we can choose the coefficients of the weighted sum such that $\hat{f}(t_j)=y_j$ for each $j$. Thus, $K$ controls the smoothness of the approximation $\hat{f}(t)$. We have to choose this parameter according to the used functional basis and the characteristics of the data. Another parameter to be selected is the type of functional basis. Indeed, there are different functional bases, each with different characteristics, which ideally reflect the features of observed data. In a certain way, we can use the parameter $K$ to understand whether the used basis was more or less suitable: the smaller $K$ is, the better the base reflects the characteristics of the data. The type of basis selected is critical when one is interested in analyzing derivatives. Formally, when we are interested in
+When $K=n$, we have a limit case called exact representation or interpolation. It is a limit situation because we can choose the coefficients of the weighted sum such that $\hat{f}(t_j)=y_j$ for each $j$. Thus, $K$ controls the smoothness of the approximation $\hat{f}(t)$. We have to choose this parameter according to the used functional basis and the characteristics of the data. Another parameter to be selected is the type of functional basis itself. There are different functional bases, each with different characteristics, which ideally reflect the features of observed data. In a certain way, we can use the parameter $K$ to understand whether the used basis was more or less suitable: the smaller $K$ is, the better the base reflects the characteristics of the data. The type of basis selected is critical when one is interested in analyzing derivatives. Formally, when we are interested in
 \begin{equation}
     \label{eq:derivative}
     D \hat{f}(t)=\sum_k^K \hat{c}_k D \phi_k(t)=\hat{\mathbf{c}}^{\prime} D \phi(t)
@@ -49,13 +42,13 @@ where $D$ is the derivative operator defined as $Df(t)=\frac{d}{dt}f(t)$. This o
     \label{eq:deroperator}
     D^2f(t)=\frac{d^2}{dt^2}f(t), \dots, D^kf(t)=\frac{d^k}{dt^k}f(t)
 \end{equation}
-We will now describe some of the most commonly used functional bases, showing their applications and their characteristics.
-\paragraph{Polynomial basis.} The polynomial base consists of monomials of different order.
+The following are some of the most common functional bases used, highlighting their characteristics.
+\paragraph{Polynomial basis.} The polynomial basis consists of monomials of different order.
 \begin{equation}
     \label{eq:polinomial}
     \phi_k(t)=(t-\omega)^k \qquad k=0,\dots, K
 \end{equation}
-where $\omega$ is a shift parameters that is usually chosen to be in the center of the interval of approximation. The polynomial basis tends to fit the center of the data very well, but the tails tend to have less ideal behavior. This is why they are never used for extrapolation or forecasting. However, the basis exhibits a desirable behavior: $t_j$ are equally spaced, and the basis can be fit with minimal computational effort. Moreover, derivatives are simple to compute and tend to be good estimators for actual derivatives.
+where $\omega$ is a shift parameter that is usually chosen to be in the center of the interval of approximation. The polynomial basis tends to fit the center of the data very well, but the tails tend to exhibit less ideal behavior. This is why they are never used for extrapolation or forecasting. However, the basis has a remarkable behavior: if $t_j$ are equally spaced, the basis can be fit with minimal computational effort. Moreover, derivatives are simple to compute and tend to be good estimators for actual derivatives, although they may present a wiggling effect when $K$ is excessively large. 
 \paragraph{Exponential and power basis.} The exponential base consists of a series of exponential functions 
 \begin{equation}
     \label{eq:exponential}
@@ -67,7 +60,7 @@ where the rate parameters $\lambda_k$ are all distinct and often $\lambda_1=0$. 
     \phi_k(t)=t^{\lambda_k} \qquad k=1,\dots, K
 \end{equation}
 is less useful, but can be helpful when $t$ is strictly positive.
-\paragraph{Fourier basis.} One of the most famous and widely used bases is the Fourier basis, mainly because it can capture the periodic behavior of data but also because it is very useful for stable functions and when curvatures tent to be of the same order in all the data. However, the Fourier basis is unsuitable for data known or suspected to reflect some discontinuities. Fourier basis is defined as:
+\paragraph{Fourier basis.} One of the most famous and widely used bases is the Fourier basis, mainly because it can capture the periodic behavior of data and is very useful for stable functions when curvatures tend to have the same order in all the data. However, the Fourier basis is unsuitable for data known or suspected to reflect some discontinuities. Fourier basis is defined as:
 \begin{equation}
     \label{eq:fourier}
     \phi_k(t)=\left\{ \begin{array}{ll}
@@ -77,7 +70,7 @@ is less useful, but can be helpful when $t$ is strictly positive.
     \end{array}\right.
 \end{equation}
 The period of the basis is determined as $\mathcal{T}=\frac{2\pi}{\omega}$. The algorithm used to calculate the coefficients of this basis, the Fast Fourier transform, makes it possible to find the coefficients extremely efficiently when $n$ is a power of 2 and the observations are equally spaced.
-\paragraph{B-splines basis.} The B-splines base is a splines base. Splines are bases defined by a number $L$ of knots and an order $m$. Knots are values $\tau_l$ for $l=1,\dots,L-1$ that divide the interval a function has to be estimated into $L$ sub-intervals. Remember that every sub-interval must contain at least one observation. On each sub-interval, the spline is a polynomial function of a specific order $m$, the degree of the polynomial itself. Polynomials defined on adjacent intervals join smoothly at knot values, such that the function at that point is constrained to the value of the knot itself. By increasing the number of knots, the fit of the estimated function to the observed data can be improved up to the extreme situation where the knot numbers have the same value as the observed data. Thus, the number of nodes will affect the goodness of fit to the observed data. In a certain way, the parameter $L$ regulates the flexibility of our fit. This is why having more nodes is a good practice for regions with complex variations. Thus, to summarise what has been said so far, a spline is defined by the order of the polynomials and the sequence of nodes. B-splines are a particular spline basis developed by de Boor in 2001. 
+\paragraph{B-splines basis.} The B-splines base is a splines base. Splines are bases defined by a number $L$ of knots and an order $m$. Knots are values $\tau_l$ for $l=1,\dots,L-1$ that divide the interval on which a function has to be estimated into $L$ sub-intervals. On each sub-interval, the spline is a polynomial function of a specific order $m$ which is the degree of the polynomial itself. Polynomials defined on adjacent intervals join smoothly at knot values, such that the function at that point is constrained to the value of the knot itself. By increasing the number of knots, the fit of the estimated function to the observed data can be improved up to the extreme situation where the knot numbers have the same value as the observed data. Thus, the number of nodes will affect the goodness of fit to the observed data. In a certain way, the parameter $L$ regulates the flexibility of our fit. This is why having more nodes is a good practice for regions with complex variations. Thus, to summarise what has been said so far, a spline is defined by the order of the polynomials and the sequence of nodes. B-splines are a particular spline basis developed by de Boor in 2001. 
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth]{Images/bspline.png}
@@ -231,16 +224,16 @@ As in PCA, each weight function has the task of capturing the greatest amount of
 % Bagging Voronoi Clustering Algorithm >>>
 \section{Bagging Voronoi Classifier}
 \label{sec:bvc}
-Bagging Voronoi Clustering Algorithm is an algorithm presented in \citeauthor{secchi_bagging_2013} (2013), and it is an algorithm for unsupervised classification of functional data that exploits spatial dependence by repeatedly generating random connectivity maps and by clustering, at each replicate, local representatives of neighboring functional data. The algorithm is entirely non-parametric. Thus, we don't need any a priori hypothesis on data distributions, which makes it more robust. With this algorithm, we should be able to spot regions in the printing plate with anomalous behavior. Before detailing the steps of the algorithm, it's helpful to introduce a fundamental concept: Voronoi tessellation. Voronoi diagram is a plane partition into regions close to each object of a given set. In our case, these objects are just the sites of the lattice. We call these objects nuclei. Each nucleus has a corresponding region, called a Voronoi cell, consisting of all points of the plane closer to that nucleus than to any other. Let's then provide a formal definition of a Voronoi cell. Let $X$ be a metric space and $d(\cdot, \cdot)$ be a distance function, in our case Euclidean distance. Let $\Phi_n$ be the set of $n$ selected nuclei and let each nucleus be a tuple of coordinates $\left(P_k\right)_{k\in \Phi_n}$. The Voronoi cell $R_k$ associated with the site $P_k$ is defined as
+\citeauthor{secchi_bagging_2013} (2013) presents the Bagging Voronoi Clustering Algorithm. It is an algorithm for unsupervised classification of functional data that exploits spatial dependence by repeatedly generating random connectivity maps and by clustering, at each replicate, local representatives of neighboring functional data. The algorithm is entirely non-parametric. Thus, we do not need any a priori data distribution hypothesis, making it more robust. The algorithm is structured in five consecutive steps. The first step involves using a Voronoi tessellation to partition the domain lattice. Voronoi diagram divides the plane into regions close to each object of a given set. In our case, these objects are just the sites of the lattice. We call these objects nuclei. Each nucleus has a corresponding region, called a Voronoi cell, consisting of all points of the plane closer to that nucleus than to any other. Let $X$ be a metric space and $d(\cdot, \cdot)$ be a distance function, in our case, Euclidean distance. Let $\Phi_n$ be the set of $n$ selected nuclei and let each nucleus be a tuple of coordinates $\left(P_k\right)_{k\in \Phi_n}$. The formal definition of a Voronoi cell $R_k$ associated with the site $P_k$ is 
 \begin{equation}
     \label{eq:voronoicell}
     R_k=\{x\in X \mid d(x, P_k)\leq d(x, P_j),\forall j\neq k\}
 \end{equation}
-The Voronoi tessellation is simply the collection of all the cells in the space.
-An example of a Voronoi tessellation can be seen in Fig. \ref{fig:voronoi}.
-\begin{figure}[H]
+The Voronoi tessellation is the collection of all the cells in the space.
+Fig. \ref{fig:voronoi} shows an example.
+\begin{figure}
     \centering
-    \includegraphics[width=0.4\textwidth]{Images/A-set-of-atoms-the-associated-Voronoi-tessellation-solid-lines-and-the-Delaunay.png}
+    \includegraphics[width=0.3\textwidth]{Images/A-set-of-atoms-the-associated-Voronoi-tessellation-solid-lines-and-the-Delaunay.png}
     \caption[Voronoi tessellation.]{Example of Voronoi tessellation with highlighted nuclei.}
     \label{fig:voronoi}
 \end{figure}
@@ -248,8 +241,7 @@ An example of a Voronoi tessellation can be seen in Fig. \ref{fig:voronoi}.
 
 \subsection{Algorithm Steps}
 \label{subsec:algsteps}
-In this section, I will provide a detailed description of the algorithm steps.
-Suppose a latent field of labels $\Lambda_0:\mathcal{S}_0 \rightarrow \{1,\dots,L\}$ which is defined on the lattice $\mathcal{S}_0$. $\Lambda_0(\mathbf{x})$ is the true unknown label associated to the site $\mathbf{x}\in\mathcal{S}_0$, where $\mathcal{S}_0 \subset \mathcal{S}$ and $\mathcal{S}$ is a measurable subset of $\mathbb{R}^d$. In addition, suppose that a functional datum is observed in each site $\mathbf{x}\in\mathcal{S_0}$. In Algorithm \ref{alg:bvc}, there is the pseudo-code of the Bagging Voronoi algorithm.
+This section describes in detail the algorithm steps. In Alg. \ref{alg:bvc}, there is the pseudo-code of the Bagging Voronoi algorithm. Suppose a latent field of labels $\Lambda_0:\mathcal{S}_0 \rightarrow \{1,\dots,L\}$ which is defined on the lattice $\mathcal{S}_0$. $\Lambda_0(\mathbf{x})$ is the true unknown label associated to the site $\mathbf{x}\in\mathcal{S}_0$, where $\mathcal{S}_0 \subset \mathcal{S}$ and $\mathcal{S}$ is a measurable subset of $\mathbb{R}^d$. In addition, suppose that a functional datum is observed in each site $\mathbf{x}\in\mathcal{S_0}$. The steps needed to find an estimation of true label $\Lambda_0(\mathbf{x})$ the following steps are needed.
 
 \begin{algorithm}
 \scriptsize
@@ -281,18 +273,18 @@ Suppose a latent field of labels $\Lambda_0:\mathcal{S}_0 \rightarrow \{1,\dots,
 \end{algorithm} 
 
 
-\paragraph{Step 1: Voronoi Tessellation} Select a set of points $\mathbf{x}\in\mathcal{S}$ as nuclei for the Voronoi tessellation. Thus, let $\Phi_n=\{\mathbf{Z}_1, \dots, \mathbf{Z}_n\}$ be a set of $n$ points in $\mathcal{S}$ sampled from a proper distribution $F$ defined on S: this will be the set of nuclei of the Voronoi tessellation. For each $\mathbf{Z}_i\in\Phi_n$ define the polyhedron
+\paragraph{Step 1: Voronoi Tessellation.} Select a set of points $\mathbf{x}\in\mathcal{S}$ as nuclei for the Voronoi tessellation. Thus, let $\Phi_n=\{\mathbf{Z}_1, \dots, \mathbf{Z}_n\}$ be the set of $n$ points in $\mathcal{S}$ sampled from a proper distribution $F$ defined on S: this will be the set of nuclei of the Voronoi tessellation. For each $\mathbf{Z}_i\in\Phi_n$ define the polyhedron
 \begin{equation}
     \label{eq:polyedron}
     V\left(\mathbf{Z}_i \mid \Phi_n\right)=\{\mathbf{x}\in\mathcal{S} : d\left(\mathbf{x},\mathbf{Z}_i\right) \leq d\left(\mathbf{x}, \mathbf{Z}_j\right), \quad \text{for all}\quad \mathbf{Z}_j \in \Phi_n, i\neq j\}
 \end{equation}
 to be the closest Voronoi cell with nuclues $Z_j$ for the Voronoi tessellation induced by $\Phi_n$.
-\paragraph{Step 2: Functional Local Representatives} Consider T, a bounded interval of $\mathbb{R}$ and a realization $f_{\mathbf{x}}:T\rightarrow \mathbb{R}$ of a functional random variable is observed in each site $\mathbf{x}$ of the lattice $S_0$. We got a Voronoi tessellation of the lattice $S_0$ from the previous step, which defines random neighborhoods. For each element $V_i$ of the Voronoi tessellation, we sum up the information contained in the sub-sample $\{f_{\mathbf{x}}\}_{\mathbf{x} \in V_i}$ by estimating a functional local representative through a method that exploits spatial dependence of neighboring data. For example, the authors suggest using a weighted mean with a Gaussian kernel. Still, we can use any functional local representative we prefer, depending on our needs and problem domain. For $i=1, \dots, n$ the functional local representative $g_i$ aforementioned is defined as
+\paragraph{Step 2: Functional Local Representatives.} Consider $T$, a bounded interval of $\mathbb{R}$ and a realization $f_{\mathbf{x}}:T\rightarrow \mathbb{R}$ of a functional random variable is observed in each site $\mathbf{x}$ of the lattice $S_0$. The Voronoi tessellation of the lattice $S_0$ computed in the previous step, defines random neighborhoods. For each element $V_i$ of the Voronoi tessellation, we sum up the information contained in the sub-sample $\{f_{\mathbf{x}}\}_{\mathbf{x} \in V_i}$ by estimating a functional local representative through a method that exploits spatial dependence of neighboring data. For example, the authors suggest using a weighted mean with a Gaussian kernel. Still, we can use any functional local representative we prefer, depending on our needs and problem domain. For $i=1, \dots, n$ the functional local representative $g_i$ aforementioned is defined as
 \begin{equation}
     \label{eq:gaussianmean}
     g_i(t)=\frac{\sum_{\mathbf{x}\in V_i}w^i_{\mathbf{x}}\cdot f_{\mathbf{x}}(t)}{\sum_{\mathbf{x}\in V_i}w^i_{\mathbf{x}}}
 \end{equation}
-where $w_{\mathbf{x}}^i$ is a Gaussian weight centered in $Z_i$ and decreasing with respect to $d\left(\mathbf{x}, \mathbf{Z}_i\right)$. Intuitively, we assume that spatial dependence between two sites decreases when the distance between them increases. The kernel covariance matrix is $\sigma^2\mathbb{I}_2$, where $\sigma=d_{max}/d_{min}$, being $d_{max}$ and $d_{min}$ the maximum and minimum distance between two nuclei of the tessellation, respectively. This choice connects $\sigma$ to the mean dimension of the tessellation via an estimator of the element's mean diameter. The choice of $n$, which sets the tessellation dimension and thus the number of local representatives to be computed, greatly influences the algorithm behavior: in general, we have to find an optimal $n$ such that we find a good compromise between variance and bias. We will see two possible approaches for choosing the optimal $n$ value in Section \ref{sec:bcv-cases}.
+where $w_{\mathbf{x}}^i$ is a Gaussian weight centered in $Z_i$ and decreasing with respect to $d\left(\mathbf{x}, \mathbf{Z}_i\right)$. Intuitively, we assume that spatial dependence between two sites decreases when the distance between them increases. The kernel covariance matrix is $\sigma^2\mathbb{I}_2$, where $\sigma=d_{max}/d_{min}$, being $d_{max}$ and $d_{min}$ the maximum and minimum distance between two nuclei of the tessellation, respectively. This choice connects $\sigma$ to the mean dimension of the tessellation via an estimator of the element's mean diameter. The choice of $n$, which sets the tessellation dimension and thus the number of local representatives to be computed, greatly influences the algorithm behavior: in general, we have to find an optimal $n$ such that we find a good compromise between variance and bias. We will see two possible approaches for choosing the optimal $n$ value in Section \ref{sec:irradiance}.
 \paragraph{Step 3: Dimensional Reduction and Clustering} The algorithm's third step aims to perform data dimensional reduction and cluster the dimensionally reduced data. The most common tool used for dimensionality reduction of functional data is FPCA. For dimensional reduction of functional data, we need to find the best projection local representatives $\{g_1, \dots, g_n \}$ onto the space generated by a proper functional basis of finite dimension $p$. To choose the correct dimension $p$, we can use the amount of variance explained by each functional principal component. "For instance, we could set a threshold, say 95\%, and keep the first $p$ principal components that account for a variance greater than or equal to 95\% of the total variance of the initial functional data. Alternatively, we could use the scree plot of the absolute variance explained by each principal component and retain the $p$ components before the knee. This latter approach offers more freedom of choice to the analyst. Thus, a deep understanding of the problem domain becomes essential. Using a bootstrapping method, we can repeat steps 1-3 $B$ times, where $B$ is arbitrarily chosen. 
 \paragraph{Step 4: Cluster Matching} The output of the $b$-th replicate of the bootstrap phase of the algorithm is a label assignment for each local representative estimated during the $b$-th run. All sites $\mathbf{x} \in V_i^b$ get the same label associated with the function local representative $g_i^b(t)$. To obtain a classification map of the lattice $\mathcal{S}_0$, we consider the frequency distribution of assignment of each site to each of the $K$ clusters along the $B$ replicates. To compute this frequency distribution, we need, in turn, to assume that cluster labels $\{C_1^b, \dots, C_K^b\}$ are coherent along the $B$ replicates. More specifically, we want cluster labels $\{C_1^b, \dots, C_K^b\}$ to be coherent with $\{C_1^m\, \dots, C_K^m\}$, for all $m<b$ and $b\geq2$. This is obtained through cluster matching. Cluster matching is a set of techniques that allow us to keep different clustering algorithm outputs coherent. I will discuss a simple approach based on a contingency table. The algorithm looks for the label permutation that minimizes the total sum of the off-diagonal frequencies in the contingency table describing the joint distribution of sites along the classifications at two subsequent replicates. At the end of clustering matching, for each site $\mathbf{x}$ we will have a vector $\pi_{\mathbf{x}}^K=\left(P_1, \dots, P_K\right)$ where each $P_i, \quad i=1,\dots,k$ is the frequency the label $k$ was assigned to the site $\mathbf{x}$. The final label will be the label associated with maximum $P_k$. In other words, it is a majority voting process among the different replicates $b$.
 \paragraph{Step 5: Output Evaluation} To have an overview of the statistical validity of the clustering just performed, we can use \textit{spatial entropy}. This concept is directly derived from the classical notion of entropy. Considering the frequency distribution vector $\boldsymbol{\pi}=(\pi_{\mathbf{x}}^1,\dots,\pi_{\mathbf{x}})^K$ of each site $\mathbf{x} \in \mathcal{S}_0$ to each of the $K$ clusters obtained after the bootstrapping step of the algorithm. The entropy associated site $\mathbf{x}$ classification in the site $\mathbf{x}\in\mathcal{S}_0$ is defined as
@@ -316,11 +308,10 @@ where $B$ and $W$ are the final between and within cluster sum of squares matrix
 %%%%%
 
 % Succesful case of the algorithm >>>
-\section{Successful Case Studies in Clustering Algorithm Application}
-\label{sec:bcv-cases}
-In this section, we will discuss two examples of how the algorithm outlined in the previous paragraph has been successfully applied in two completely different domains: the clustering of irradiance data performed in \citeauthor{secchi_bagging_2013} \citeyear{secchi_bagging_2013} and the analysis of spatio-temporal mobile phone data performed in \citeauthor{secchi_analysis_2015} \citeyear{secchi_analysis_2015}. In the first case, the goal is to cluster irradiance data, while in the second case, it is to find some surfaces to explain human activity in space and time. This section addresses any potential questions or uncertainties the reader may still have regarding the use of Algorithm \ref{alg:bvc} and shows some possible ways to approach this analysis.
-\subsection{Clustering of Irradiance Data}
-\label{subsec:irradiance}
+\section{Clustering of Irradiance Data}
+\label{sec:irradiance}
+In this section, we will discuss an examples of how the algorithm outlined in the previous paragraph has been successfully applied in clustering of irradiance data performed in \citeauthor{secchi_bagging_2013} (2013). This section addresses any potential questions or uncertainties the reader may still have regarding the use of Algorithm \ref{alg:bvc}. 
+
 Insolation refers to the amount of solar radiation energy captured on a specific surface area over a set time period. Typically, it is computed as average irradiance in kilowatt-hours per square meter per day (\unit{\kilo\watt.h/\metre^2.day}). The authors focused on direct insolation, which pertains to the solar irradiance measured at a particular location on Earth with a surface facing directly toward the sun's rays, omitting diffuse insolation. Diffuse insolation refers to the solar energy scattered or reflected by atmospheric components overhead. The value of direct insolation is derived from the solar constant minus the atmospheric reductions from absorption and scattering. While the solar constant is influenced by factors like Earth's distance from the sun and solar cycles, the losses are contingent on factors such as the time of day (which affects the light's path through the atmosphere based on the sun's elevation angle), cloud coverage, atmospheric moisture, and other contaminants. The authors' goal was to identify areas of the planet that are optimal with respect to the positioning of solar power collectors by considering parameters that depend on direct insolation. The data available for the analysis consists of vectors in $\mathbb{R}^{12}$ indexed by each site of the lattice. Sites are located on a non-uniform lattice $\mathcal{S}_0=\bigcup_{\lambda \in Z_{\mathbf{1}};\theta \in Z_{\mathbf{2}}}A_{\lambda\theta}$ where $Z_{\mathbf{1}} = \{ -180, -179, \dots, 178, 179\}$ and $Z_{\mathbf{2}} = \{ -66, -65, \dots, 65\}$: each element $A_{\lambda\theta}$ is the portion of the earth surface which is included between the meridians at longitude $\lambda$ and $\lambda + 1$ in degrees, and between the parallels at latitude $\theta$ and $\theta + 1$ in degrees. This lattice is, of course, non-uniform and includes 47,520 worldwide non-polar districts. In each site, the 12 measures correspond to the monthly maximum energy deficit values with respect to the monthly average. The maximum and average values are computed over the 22-year period from July 1983 to June 2005. For each site, authors obtained a functional datum $Y_{\lambda,\theta}(t)$ by smoothing $\{Y_{\lambda\theta}^1, \dots, Y_{\lambda\theta}^12\}$ with a Gaussian kernel with bandwidth equal to 1.5, where $Y_{\lambda\theta}^\nu$ is the irradiance data for each month. The authors used a Gaussian isotropic kernel to compute the weighted average local representatives. They selected the first $p=3$ functional principal components since with only these three components, the proportion of explained variance was more than 95\%. For classifying the scores of the $n$ representatives, they employed the K-Means algorithm with the $L^2$ semi-metric induced by the principal components.
 \begin{figure}
     \centering
@@ -342,106 +333,102 @@ The final choice $K=5$ was made looking at maps in Fig. \ref{fig:irrentropy}, wh
     \caption[Classification of irradiance data.]{In the top panels, final classification maps obtained via a majority vote on frequencies of assignment, and by setting $K = 5$ (left) or $K = 6$ (right).In the bottom panels, a set of functional local representatives obtained with $n = 500$ in one of the iterations of the algorithm and clustered with $K = 5$ (left) and with $K=6$ (right). From \citeauthor{secchi_bagging_2013} \citeyear{secchi_bagging_2013}.}
     \label{fig:resbagging}
 \end{figure}
-The parallelism between irradiance data/planet and temperature profiles/print area seems straightforward and relatively clear. So, it's reasonable to believe that an application in additive manufacturing could lead to significant advancements.
-\subsection{Analysis of Spatio-Temporal Mobile Phone Data in Milan}
-\label{subsec:mobilephonemilan}
-I have chosen to present this example to illustrate to the reader the flexibility of the previously discussed algorithm. It demonstrates how the method can adapt to different data dimensionality reduction techniques and how a Fourier basis can represent functional data exhibiting certain seasonality, as with lattice structures in Section. \ref{subsec:devcell}.
-In \citeauthor{secchi_analysis_2015} \citeyear{secchi_analysis_2015}, authors examined high-dimensional, geo-referenced mobile phone usage data from Milan's urban area to discern activity patterns within the city over time. The goal was to identify specific urban zones with similar temporal patterns, which could indicate specific activities or events in those areas. To achieve the goal, they decided to use the algorithm explained in Section \ref{sec:bvc} coupled with treelet analysis (I'll explain it in just a moment). 
-The data available for analysis are from Telecom Italia. In this dataset, the metropolitan city of Milan is divided into a uniform lattice $\mathcal{S}_0$ consisting of 97x109 sites. In each location, the average number of mobile phones simultaneously using the network for calling is provided every 15 minutes over 14 days.
+The parallelism between irradiance data/planet and temperature profiles/print area seems straightforward and relatively clear. So, it's reasonable to believe that an application in additive manufacturing could lead to positive results.
 
-%%%%% Grammarly eseguito sul testo qua sopra ^^^
+%\subsection{Analysis of Spatio-Temporal Mobile Phone Data in Milan}
+% \label{subsec:mobilephonemilan}
+% I have chosen to present this example to illustrate to the reader the flexibility of the previously discussed algorithm. It demonstrates how the method can adapt to different data dimensionality reduction techniques and how a Fourier basis can represent functional data exhibiting certain seasonality, as with lattice structures in Section. \ref{subsec:devcell}.
+% In \citeauthor{secchi_analysis_2015} \citeyear{secchi_analysis_2015}, authors examined high-dimensional, geo-referenced mobile phone usage data from Milan's urban area to discern activity patterns within the city over time. The goal was to identify specific urban zones with similar temporal patterns, which could indicate specific activities or events in those areas. To achieve the goal, they decided to use the algorithm explained in Section \ref{sec:bvc} coupled with treelet analysis (I'll explain it in just a moment). 
+% The data available for analysis are from Telecom Italia. In this dataset, the metropolitan city of Milan is divided into a uniform lattice $\mathcal{S}_0$ consisting of 97x109 sites. In each location, the average number of mobile phones simultaneously using the network for calling is provided every 15 minutes over 14 days.
 
-
-This quantity is called Erlang and it is defined as
-\begin{equation}
-    \label{eq:erlang}
-    E_{\mathbf{x}j}=\frac{1}{15}\sum_{q=1}^Q \left| T_{\mathbf{x}j}^q \right|
-\end{equation}
-where $T_{\mathbf{x}j}^q$ indicates the time interval in which the $q$-th mobile phone is using the network for calling while moving within site $\mathbf{x}$ and during the $j$-th quarter of an hour. The Erlang data was recorded every quarter of an hour, from March 18th, 2009, 00:15, till March 31st, 2009, 23:45. Fig. \ref{fig:secchino} there is an example of an Erlang profile.
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.43]{Images/secchierlang.png}
-    \caption[Erlang profile.]{Erlang profile for a site in the lattice $\mathcal{S}_0$ \cite{secchi_analysis_2015}.}
-    \label{fig:secchino}
-\end{figure}
-However, for some sites of the lattice, Erlang profiles had some missing values, and in some instances, they were entirely missing. Therefore, after the data cleaning phase, the authors decided to focus only on a non-uniform time grid of $p = 1,308$ elements, each element of the time grid being relative to a quarter of an hour for which an Erlang measurement has been observed in at least one site of the lattice. In Algorithm \ref{alg:bvc} for dimensional reduction of functional data, FPCA was suggested. While FPCA stands as an effective technique for identifying optimal subspaces to represent data, it has a limitation in its global approach, making it less appropriate for multi-resolution analysis. This is primarily because its basis elements typically involve a linear combination of all foundational variables. So, authors decided to use a treelet basis, introduced in \citeauthor{lee_treeletsadaptive_2008} (2008). For this specific case, since the data exhibits an evident seasonality, authors decided to use a Fourier basis with a period equal to 1 week. Thus, the reconstructed functional form of the Erlang profile for site $\textbf{x} \in \mathcal{S}_0$ is a function $E_{\textbf{x}(t)}$ such that:
-\begin{equation}
-    E_{\textbf{x}}(t)=\frac{c_0^{\textbf{x}}}{2} + \sum_{h=1}^H \left[a_h^{\textbf{x}}\cos \left( h\omega t\right) + b_h^{\textbf{x}}\cos \left( h\omega t\right) \right]
-\end{equation}
-where $t \in \left[ 0; T\right]$, $\omega = 2\pi/T$ and $T=60 \times 24 \times 7$ is the period expressed in minutes. To choose the optimal basis dimension $H$, we can use the power spectrum associated to the site~-~wise smoothing of the Erlang data with a Fourier basis of large dimension $H = 200$. The power spectrum of the Fourier expansion of a signal represents the amplitude of the signal as a function of the frequency, and at the $h$-th frequency it is related to the amplitude of the $h$-th harmonic
-
-\begin{equation}
-    \label{eq:spectrum}
-    P_{\mathbf{x}}(h)=\sqrt{(a^{\mathbf{x}}_h)^2 + (a^{\mathbf{x}}_h)^2}
-\end{equation}
-
-Thus, the more the $h$-th harmonic is relevant in the explanation of features occurring in the data, the more $P_{\mathbf{x}}(h)$ will be large. From the spectrum in Fig. \ref{fig:fantasmino}, we can see that local maximum happening at multiple of 7 (the dotted lines), while for $H >100\omega$, power spectre becomes almost negligible.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.6]{Images/fantasmino.png}
-    \caption[Spectrum of Erlang data.]{Average power spectrum $P(h)$ obtained via site-wise smoothing of the Erlang measures with a Fourier basis of dimension $H = 200$. Only the values of $P(h)$ for$ h = 1, \dots, 100$ are shown in the plot. Dotted vertical lines are drawn for multiples of 7 \cite{secchi_analysis_2015}.}
-    \label{fig:fantasmino}
-\end{figure}
-
-As did in Section \ref{subsec:irradiance}, the metric $d(\cdot, \cdot)$ used is Euclidean distance, the total number of bootstrap $B=50$, and the dimension $n$ of the Voronoi tessellation ranging from 50 to 1250. As we already know, the optimal $n$ will be found by using the scree plot.
+% %%%%% Grammarly eseguito sul testo qua sopra ^^^
 
 
-\subsection{One Last Thing}
-\label{subsec:devcell}
-In previous section, I have chosen to provide an example of how functional data and clustering algorithms can be used to conduct a layer-wise temperature profile analysis. However, these concepts can be readily adapted to other scenarios, including, for instance, particular application in three dimensions. In this section, I want to go beyond the primary domain of the thesis. I want to suggest how the algorithm could also be leveraged for the classification of functional data in three dimensions. A possible application in three dimensions could be the clustering of functional data regarding the deviation of cell profiles in lattice structures. Recall that in 3 dimension, Voronoi regions are represented as polyhedra, like in Fig. \ref{fig:3dvoronoi}.
+% This quantity is called Erlang and it is defined as
+% \begin{equation}
+%     \label{eq:erlang}
+%     E_{\mathbf{x}j}=\frac{1}{15}\sum_{q=1}^Q \left| T_{\mathbf{x}j}^q \right|
+% \end{equation}
+% where $T_{\mathbf{x}j}^q$ indicates the time interval in which the $q$-th mobile phone is using the network for calling while moving within site $\mathbf{x}$ and during the $j$-th quarter of an hour. The Erlang data was recorded every quarter of an hour, from March 18th, 2009, 00:15, till March 31st, 2009, 23:45. Fig. \ref{fig:secchino} there is an example of an Erlang profile.
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[scale=0.43]{Images/secchierlang.png}
+%     \caption[Erlang profile.]{Erlang profile for a site in the lattice $\mathcal{S}_0$ \cite{secchi_analysis_2015}.}
+%     \label{fig:secchino}
+% \end{figure}
+% However, for some sites of the lattice, Erlang profiles had some missing values, and in some instances, they were entirely missing. Therefore, after the data cleaning phase, the authors decided to focus only on a non-uniform time grid of $p = 1,308$ elements, each element of the time grid being relative to a quarter of an hour for which an Erlang measurement has been observed in at least one site of the lattice. In Algorithm \ref{alg:bvc} for dimensional reduction of functional data, FPCA was suggested. While FPCA stands as an effective technique for identifying optimal subspaces to represent data, it has a limitation in its global approach, making it less appropriate for multi-resolution analysis. This is primarily because its basis elements typically involve a linear combination of all foundational variables. So, authors decided to use a treelet basis, introduced in \citeauthor{lee_treeletsadaptive_2008} (2008). For this specific case, since the data exhibits an evident seasonality, authors decided to use a Fourier basis with a period equal to 1 week. Thus, the reconstructed functional form of the Erlang profile for site $\textbf{x} \in \mathcal{S}_0$ is a function $E_{\textbf{x}(t)}$ such that:
+% \begin{equation}
+%     E_{\textbf{x}}(t)=\frac{c_0^{\textbf{x}}}{2} + \sum_{h=1}^H \left[a_h^{\textbf{x}}\cos \left( h\omega t\right) + b_h^{\textbf{x}}\cos \left( h\omega t\right) \right]
+% \end{equation}
+% where $t \in \left[ 0; T\right]$, $\omega = 2\pi/T$ and $T=60 \times 24 \times 7$ is the period expressed in minutes. To choose the optimal basis dimension $H$, we can use the power spectrum associated to the site~-~wise smoothing of the Erlang data with a Fourier basis of large dimension $H = 200$. The power spectrum of the Fourier expansion of a signal represents the amplitude of the signal as a function of the frequency, and at the $h$-th frequency it is related to the amplitude of the $h$-th harmonic
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.43]{Images/3D-Voronoi-tessellation-with-1000-grains-unit-cell-with-its-internal-grains-not.png}
-    \caption[3d Voronoi tessellation.]{An example of a Voronoi tesselation in 3d.}
-    \label{fig:3dvoronoi}
-\end{figure}
+% \begin{equation}
+%     \label{eq:spectrum}
+%     P_{\mathbf{x}}(h)=\sqrt{(a^{\mathbf{x}}_h)^2 + (a^{\mathbf{x}}_h)^2}
+% \end{equation}
 
-In \citeauthor{colosimo_complex_2022} (2022), the authors aim to compare the nominal slices with the actual slices measured through x-ray computed tomography of a lattice structure composed of 64 dodecahedron unit cells of size \SI{10}{\milli\metre} within a specimen of $40 \times 40 \times 40$ \unit{\milli\metre}. Subsequntely, the 2D image of the as-built single cell and as-designed one were compared, slice by slice, in order to compute the deviation index. Given a pair of images that correspond to the $z-$th slice of the as-designed cell and the $z-$th slice of the as-built cell, let $i_{u,v,z}(\text{as.designed}$ and let $i_{u,v,z}(\text{as.build}$ be the intensities of $(u,v)^{th}$ pixel in the as-designed slice and in the as-built slice, respectively. In Fig. \ref{fig:slices} there are some examples of the procedure. A superimposition of these two images leads to four possible cases:
-\begin{itemize}
-    \item Region 1: pixels in which both $i_{u,v,z}(\text{as.designed})=0$ and $i_{u,v,z}(\text{as.build})=0$, i.e., pixels where material is present in both the images.
-    \item Region 2: pixels in which both $i_{u,v,z}(\text{as.designed})=1$ and $i_{u,v,z}(\text{as.build})=1$, i.e., pixels that correspond to the background in both the images.
-    \item Region 3: pixels in which both $i_{u,v,z}(\text{as.designed})=0$ and $i_{u,v,z}(\text{as.build})=1$, i.e., pixels where material is present in the as-designed slice but not in the as-built slice (i.e., less material has been produced than indicated in the CAD model)
-    \item Region 4: pixels in which both $i_{u,v,z}(\text{as.designed})=1$ and $i_{u,v,z}(\text{as.build})=0$, i.e. pixels where material is present in the as-built slice but not in the as-designed slice (i.e., more material has been produced than indicated in to the CAD model).
-\end{itemize}
+% Thus, the more the $h$-th harmonic is relevant in the explanation of features occurring in the data, the more $P_{\mathbf{x}}(h)$ will be large. From the spectrum in Fig. \ref{fig:fantasmino}, we can see that local maximum happening at multiple of 7 (the dotted lines), while for $H >100\omega$, power spectre becomes almost negligible.
 
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[scale=0.6]{Images/fantasmino.png}
+%     \caption[Spectrum of Erlang data.]{Average power spectrum $P(h)$ obtained via site-wise smoothing of the Erlang measures with a Fourier basis of dimension $H = 200$. Only the values of $P(h)$ for$ h = 1, \dots, 100$ are shown in the plot. Dotted vertical lines are drawn for multiples of 7 \cite{secchi_analysis_2015}.}
+%     \label{fig:fantasmino}
+% \end{figure}
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.5]{Images/slicescolosimo.png}
-    \caption[Deviation index.]{Example of as-built (top row) and as-designed (central row) slice images at different z heights with the corresponding deviation (bottom row) \cite{colosimo_complex_2022}. }
-    \label{fig:slices}
-\end{figure}
+% As did in Section , the metric $d(\cdot, \cdot)$ used is Euclidean distance, the total number of bootstrap $B=50$, and the dimension $n$ of the Voronoi tessellation ranging from 50 to 1250. As we already know, the optimal $n$ will be found by using the scree plot.
 
 
-The overall number of pixels that belong to the union of region 3 or region 4 is the number of pixels for which $i_{u,v,z}(\text{as.build}) - i_{u,v,z}(\text{as.designed}) \neq 0$. So the \emph{deviation index} for the cell $(i,j,k)$ is defined as
-\begin{equation}
-\label{eq:deviationindex}
-\delta_{i, j, k}(z)= \sum_{u=1}^p \sum_{v=1}^p \mathcal{I}\left(i_{u, v, z}(\text { as.built })\right. -i_{u, v, z}(\text { as.designed })\neq 0)_{i, j, k},
-\end{equation}
-where $\mathcal{I}$ is the indicator function, that is 1 if the condition in brackets is true and 0 otherwise.
-After calculating the deviation index for each cell, the authors suggest using a cubic B-splines basis to fit a functional profile on the deviation index as a function of the slice position along cell z-axis. The position of the knots was chosen to eliminate the first and second discontinuity present in the deviation profiles, resulting from the typical trabecular structure of lattice designs. Fixed knots were then placed at the discontinuities of the as-designed geometry. Subsequently, intermediate knots were added iteratively, until a knee in the mean squared error (MSE) scree plot of the B-spline model residuals was identified.
-At the conclusion of step 5 in Fig. \ref{fig:colosimofunctional}, as outlined in the article, we will have 64 functional profiles, one for each cell. These profiles and the centroid of each cell in a lattice in $\mathbb{R}^3$ and will be the input for the classification algorithm described in Section \ref{sec:bvc}. In doing so, we could identify if there are critical areas within the lattice where cells exhibit similar anomalous behavior. Coupled with the ability to quantify the magnitude of the defect using the functional profiles, this could lead to a deeper understanding of the lattice structure's behavior and determine whether, despite its imperfections, it remains fit for its intended use. Indeed, localized geometric and dimensional deviations of the unit cells might adversely affect the structure's elastic modulus and compressive strength \cite{colosimo_complex_2022}.
+% \subsection{One Last Thing}
+% \label{subsec:devcell}
+% In previous section, I have chosen to provide an example of how functional data and clustering algorithms can be used to conduct a layer-wise temperature profile analysis. However, these concepts can be readily adapted to other scenarios, including, for instance, particular application in three dimensions. In this section, I want to go beyond the primary domain of the thesis. I want to suggest how the algorithm could also be leveraged for the classification of functional data in three dimensions. A possible application in three dimensions could be the clustering of functional data regarding the deviation of cell profiles in lattice structures. Recall that in 3 dimension, Voronoi regions are represented as polyhedra, like in Fig. \ref{fig:3dvoronoi}.
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.5]{Images/colosimosplines.png}
-    \caption[Functional control chart in complex geometries.]{Schema of the proposed methodology in \cite{colosimo_complex_2022}. The output of step 5 would be the input for the classification algorithm.}
-    \label{fig:colosimofunctional}
-\end{figure}
-% <<< End of Succesful case of the algorithm
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[scale=0.43]{Images/3D-Voronoi-tessellation-with-1000-grains-unit-cell-with-its-internal-grains-not.png}
+%     \caption[3d Voronoi tessellation.]{An example of a Voronoi tesselation in 3d.}
+%     \label{fig:3dvoronoi}
+% \end{figure}
+
+% In \citeauthor{colosimo_complex_2022} (2022), the authors aim to compare the nominal slices with the actual slices measured through x-ray computed tomography of a lattice structure composed of 64 dodecahedron unit cells of size \SI{10}{\milli\metre} within a specimen of $40 \times 40 \times 40$ \unit{\milli\metre}. Subsequntely, the 2D image of the as-built single cell and as-designed one were compared, slice by slice, in order to compute the deviation index. Given a pair of images that correspond to the $z-$th slice of the as-designed cell and the $z-$th slice of the as-built cell, let $i_{u,v,z}(\text{as.designed}$ and let $i_{u,v,z}(\text{as.build}$ be the intensities of $(u,v)^{th}$ pixel in the as-designed slice and in the as-built slice, respectively. In Fig. \ref{fig:slices} there are some examples of the procedure. A superimposition of these two images leads to four possible cases:
+% \begin{itemize}
+%     \item Region 1: pixels in which both $i_{u,v,z}(\text{as.designed})=0$ and $i_{u,v,z}(\text{as.build})=0$, i.e., pixels where material is present in both the images.
+%     \item Region 2: pixels in which both $i_{u,v,z}(\text{as.designed})=1$ and $i_{u,v,z}(\text{as.build})=1$, i.e., pixels that correspond to the background in both the images.
+%     \item Region 3: pixels in which both $i_{u,v,z}(\text{as.designed})=0$ and $i_{u,v,z}(\text{as.build})=1$, i.e., pixels where material is present in the as-designed slice but not in the as-built slice (i.e., less material has been produced than indicated in the CAD model)
+%     \item Region 4: pixels in which both $i_{u,v,z}(\text{as.designed})=1$ and $i_{u,v,z}(\text{as.build})=0$, i.e. pixels where material is present in the as-built slice but not in the as-designed slice (i.e., more material has been produced than indicated in to the CAD model).
+% \end{itemize}
+
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[scale=0.5]{Images/slicescolosimo.png}
+%     \caption[Deviation index.]{Example of as-built (top row) and as-designed (central row) slice images at different z heights with the corresponding deviation (bottom row) \cite{colosimo_complex_2022}. }
+%     \label{fig:slices}
+% \end{figure}
+
+
+% The overall number of pixels that belong to the union of region 3 or region 4 is the number of pixels for which $i_{u,v,z}(\text{as.build}) - i_{u,v,z}(\text{as.designed}) \neq 0$. So the \emph{deviation index} for the cell $(i,j,k)$ is defined as
+% \begin{equation}
+% \label{eq:deviationindex}
+% \delta_{i, j, k}(z)= \sum_{u=1}^p \sum_{v=1}^p \mathcal{I}\left(i_{u, v, z}(\text { as.built })\right. -i_{u, v, z}(\text { as.designed })\neq 0)_{i, j, k},
+% \end{equation}
+% where $\mathcal{I}$ is the indicator function, that is 1 if the condition in brackets is true and 0 otherwise.
+% After calculating the deviation index for each cell, the authors suggest using a cubic B-splines basis to fit a functional profile on the deviation index as a function of the slice position along cell z-axis. The position of the knots was chosen to eliminate the first and second discontinuity present in the deviation profiles, resulting from the typical trabecular structure of lattice designs. Fixed knots were then placed at the discontinuities of the as-designed geometry. Subsequently, intermediate knots were added iteratively, until a knee in the mean squared error (MSE) scree plot of the B-spline model residuals was identified.
+% At the conclusion of step 5 in Fig. \ref{fig:colosimofunctional}, as outlined in the article, we will have 64 functional profiles, one for each cell. These profiles and the centroid of each cell in a lattice in $\mathbb{R}^3$ and will be the input for the classification algorithm described in Section \ref{sec:bvc}. In doing so, we could identify if there are critical areas within the lattice where cells exhibit similar anomalous behavior. Coupled with the ability to quantify the magnitude of the defect using the functional profiles, this could lead to a deeper understanding of the lattice structure's behavior and determine whether, despite its imperfections, it remains fit for its intended use. Indeed, localized geometric and dimensional deviations of the unit cells might adversely affect the structure's elastic modulus and compressive strength \cite{colosimo_complex_2022}.
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[scale=0.5]{Images/colosimosplines.png}
+%     \caption[Functional control chart in complex geometries.]{Schema of the proposed methodology in \cite{colosimo_complex_2022}. The output of step 5 would be the input for the classification algorithm.}
+%     \label{fig:colosimofunctional}
+% \end{figure}
+% % <<< End of Succesful case of the algorithm
 
 
 %>>> Simulation Study
 \section{Simulation Study}
 \label{sec:simstudy}
-\textcolor{red}{Algoritmo su dati simulati}
-\begin{enumerate}
-    \item Spiegazione analitica dei profili termici. I dati li posso prendere da qua \cite{criales_temperature_2017, burkhardt_thermo-mechanical_2022, soundararajan_review_2021, bayat_fundamental_2021, ji_analytical_2022} (ancora da leggere).
-    \item Risultati su diversi scenari per grandezza, forma e disposizione delle aree
-    \item Performance del codice (tempo di esecuzione e variabilità del tempo di esecuzione) ->  Forse può andare anche in Appendice B
-\end{enumerate}
+
 % <<< End of Simulation Study
 
 %As we will see in Section \ref{sec:bvc}, the number $K$ of clusters is an input of the algorithm, making hierarchical clustering not suitable for our purposes. But before delving into the algorithm's description, I also want to explain the concept of \textit{bagging} for clustering. It is based on the concept of bootstrapping. Bootstrapping is a resampling technique that helps in finding more reliable results from a clustering algorithm. In the algorithm, we will perform multiple clustering "rounds" in order to find a frequency distribution of the belongings of the observation to a specific cluster. The final cluster label for each observation will be the "most probable correct result" by majority voting.

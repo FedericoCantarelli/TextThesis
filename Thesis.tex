@@ -30,6 +30,7 @@
 \titlespacing{\subsection}{0pt}{3.3ex}{1.65ex}
 \titlespacing{\subsubsection}{0pt}{3.3ex}{1ex}
 \usepackage{color}
+\usepackage{datetime}
 
 % PACKAGES FOR LANGUAGE AND FONT
 \usepackage[english]{babel} % The document is in English  
@@ -66,6 +67,8 @@
 \usepackage{blindtext}
 \usepackage{booktabs}
 \usepackage{makecell}
+\usepackage{bbm}
+\usepackage{multirow}
 
 % PACKAGES FOR ALGORITHMS (PSEUDO-CODE)
 \usepackage{algorithm}
@@ -75,16 +78,10 @@
 \usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref} % Adds clickable links at references
 \usepackage{cleveref}
 
-% CHECK UNUSED REFERENCE >>>
-%\bibliographystyle{plain} % You may use a different style adapted to your field
-%\usepackage{refcheck}
-%\nocite{*}
-% <<< CHECK UNUSED REFERENCE
 
-% NEL FILE FINALE CI VA QUESTO >>>
+% Reference
 \usepackage[square, numbers, sort&compress]{natbib} % Square brackets, citing references with numbers, citations sorted by appearance in the text and compressed
 \bibliographystyle{unsrtnat} % You may use a different style adapted to your field
-% <<< NEL FILE FINALE CI VA QUESTO
 
 
 % PACKAGES FOR CODE
@@ -181,7 +178,7 @@
 \frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
 
 \puttitle{
-	title=Hot-Spot Detection Using Machine Learning in Metal PBF Processes: a Systematic Analysis of Literature, % Title of the thesis
+	title=Hot-Spot Detection \\[0.3cm] in Metal PBF Processes \\[0.5cm] \large A Systematic Literature Review of ML-Based Methods, % Title of the thesis
 	name=Federico Cantarelli, % Author Name and Surname
 	course=Management Engineering - Ingegneria Gestionale, % Study Programme (in Italian)
 	ID  = 992964,  % Student ID number (numero di matricola)
@@ -190,42 +187,51 @@
 	academicyear={2022-23},  % Academic Year
 } % These info will be put into your Title page 
 
+\newdate{date}{05}{10}{2023}
+
+\newpage
+\thispagestyle{empty}
+\begin{minipage}{0.6\textwidth}
+    \vspace{18cm}
+    \setstretch{1.5}
+    \scriptsize Scritto con \LaTeX\ usando il templeta creato da S. Bonetti, \\ A. Gruttadauria, G. Mescolini e A. Zingaro. Disponibile su \href{https://www.overleaf.com/latex/templates/classical-format-thesis-scuola-di-ingegneria-industriale-e-dellinformazione-politecnico-di-milano/dkmvtndqkyxg}{Overleaf}. \\[4ex]
+    Milano, \displaydate{date} \\ Prima e unica edizione. \\[4ex] 
+    Quest’opera è stata rilasciata con licenza Creative Commons\\ \href{https://creativecommons.org/licenses/by-nc-nd/4.0/deed.it}{Attribuzione - Non commerciale - Non opere derivate 4.0 Internazionale}\\[3ex] 
+    This work is licensed under a licence Creative Commons\\ \href{https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en}{Attribution-NonCommercial-NoDerivatives 4.0 International}
+\end{minipage}
+
+
+\newpage
+\thispagestyle{empty}
+\begin{minipage}{\textwidth}
+    \vspace{2cm}
+    \begin{flushright}
+    \textit{Ai miei genitori,\\[2ex]perché mi sono sempre stati d'esempio,\\[2ex]fin dal primo giorno.}
+    \end{flushright}
+\end{minipage}
+\newpage
 \blankpage
 
 
-\begin{flushright}
 \thispagestyle{empty}
-\setstretch{1.5}
-\textit{\hspace{5mm}Ai miei genitori,\\ \hspace{5mm}perchè mi sono sempre stati d'esempio,\\ \hspace{5mm}fin dal primo giorno.}
-\end{flushright}
-
-\reallyblankpage
-
-
-%----------------------------------------------------------------------------
-%	PREAMBLE PAGES: ABSTRACT (inglese e italiano), EXECUTIVE SUMMARY
-%----------------------------------------------------------------------------
-\startpreamble
-\setcounter{page}{1} % Set page counter to 1
-
-% ACKNOWLEDGEMENTS
-\chapter*{Ringraziamenti}
-\backgroundsetup{contents={DRAFT}}
-\input{ringraziamenti}
-\backgroundsetup{contents={}}
+\begin{minipage}{\textwidth}
+    \vspace{3cm}
+    \begin{center}
+    \textit{\large Executive Summary.}
+    \end{center}
+\end{minipage}
+\newpage
+\blankpage
 
 
-% ABSTRACT IN ENGLISH
-\chapter*{Abstract}
-\backgroundsetup{contents={DRAFT}}
-\input{abstract_en}
-\backgroundsetup{contents={}}
-
-% ABSTRACT IN ITALIAN
-\chapter*{Abstract in Italiano}
-\input{abstract_ita}
-\backgroundsetup{contents={DRAFT}}
-\backgroundsetup{contents={}}
+\thispagestyle{empty}
+\begin{minipage}{\textwidth}
+    \vspace{3cm}
+    \begin{center}
+    \textit{\large Main Matter.}
+    \end{center}
+\end{minipage}
+\cleardoublepage
 
 
 %----------------------------------------------------------------------------
@@ -233,10 +239,44 @@
 %----------------------------------------------------------------------------
 
 % TABLE OF CONTENTS
+\startpreamble
+\setcounter{page}{1} % Set page counter to 1
 \thispagestyle{empty}
 \tableofcontents % Table of contents 
 \thispagestyle{empty}
 \cleardoublepage
+
+\thispagestyle{empty}
+% LIST OF FIGURE
+\listoffigures
+\cleardoublepage
+
+% LIST OF TABLE
+\listoftables
+
+\cleardoublepage
+
+
+%----------------------------------------------------------------------------
+%	PREAMBLE PAGES: ABSTRACT (inglese e italiano), EXECUTIVE SUMMARY
+%----------------------------------------------------------------------------
+
+
+% ACKNOWLEDGEMENTS
+\chapter*{Ringraziamenti}
+\input{ringraziamenti}
+
+
+% ABSTRACT IN ENGLISH
+\chapter*{Abstract}
+\input{abstract_en}
+
+
+% ABSTRACT IN ITALIAN
+\chapter*{Sommario}
+\input{abstract_ita}
+\cleardoublepage
+
 
 %-------------------------------------------------------------------------
 %	THESIS MAIN TEXT

@@ -122,7 +122,7 @@
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
+    basicstyle=\ttfamily\scriptsize,
     breakatwhitespace=false,         
     breaklines=true,                 
     captionpos=b,                    
@@ -192,7 +192,7 @@
 \newpage
 \thispagestyle{empty}
 \begin{minipage}{0.6\textwidth}
-    \vspace{18cm}
+    \vspace{17cm}
     \setstretch{1.5}
     \scriptsize Scritto con \LaTeX\ usando il templeta creato da S. Bonetti, \\ A. Gruttadauria, G. Mescolini e A. Zingaro. Disponibile su \href{https://www.overleaf.com/latex/templates/classical-format-thesis-scuola-di-ingegneria-industriale-e-dellinformazione-politecnico-di-milano/dkmvtndqkyxg}{Overleaf}. \\[4ex]
     Milano, \displaydate{date} \\ Prima e unica edizione. \\[4ex] 
@@ -293,7 +293,6 @@
 
 \chapter{Introduction}
 \label{ch:Introduction}%
-%\backgroundsetup{contents={DRAFT}}
 \input{introduction}
 \backgroundsetup{contents={}}
 % <<< End of Introduction
@@ -304,7 +303,6 @@
 % PBF Processes >>>
 \chapter{Powder Bed Fusion Processes}
 \label{ch:Metal_AM}
-%\backgroundsetup{contents={DRAFT}}
 \input{pbf_metals}
 \backgroundsetup{contents={}}
 % <<< end of PBF processes
@@ -315,7 +313,6 @@
 % Defect in PBF Processes >>>
 \chapter{Defects in PBF Processes}
 \label{ch:defects}
-%\backgroundsetup{contents={DRAFT}}
 \input{defects}
 \backgroundsetup{contents={}}
 % <<< end of Hot Spot Defect
@@ -326,9 +323,7 @@
 % Hot Spot State of the Art >>>
 \chapter{Hot Spot Detection: a State of the Art Research}
 \label{ch:state_ot_the_art}
-\backgroundsetup{contents={DRAFT}}
 \input{state_of_the_art} 
-\backgroundsetup{contents={}}
 % <<< end of PBF Hot Spot State of the Art
 
 
@@ -342,9 +337,7 @@
 % Conclusion and future development
 \chapter{Conclusions}
 \label{ch:conclusions}
-\backgroundsetup{contents={DRAFT}}
 \input{conclusion}
-\backgroundsetup{contents={}}
 % <<< End of conclusion
 
 %-------------------------------------------------------------------------
@@ -352,7 +345,7 @@
 %-------------------------------------------------------------------------
 
 \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
-\bibliography{references}
+{\scriptsize \bibliography{references}}
 
 %-------------------------------------------------------------------------
 %	APPENDICES
@@ -365,7 +358,6 @@
 % Appendix A: Research Methodology >>>
 \chapter{Appendix A}
 \label{ap:research}
-%\backgroundsetup{contents={DRAFT}}
 \input{appendixA}
 \backgroundsetup{contents={}}
 % <<< End of Appendix A
@@ -373,11 +365,8 @@
 % Appendix B: Python Code >>>
 \chapter{Appendix B}
 \label{ap:Python}%
-\backgroundsetup{contents={DRAFT}}
 \input{appendixB}
-\backgroundsetup{contents={}}
 % <<< End of Appendix B
 
-\blankpage
 \cleardoublepage
 \end{document}

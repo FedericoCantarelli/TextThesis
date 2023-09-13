@@ -1,6 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Review fatta
-% vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 This chapter presents a novel approach proposed by the author for clustering building plate areas characterized by similar thermal profiles, firstly described in \citeauthor{secchi_bagging_2013} (2013). In general, it can be applied to any functional data referenced by a lattice in $\mathbb{R}$, $\mathbb{R}^2$ or $\mathbb{R}^3$. The analysis of functional data allows us to gain a comprehensive and detailed understanding of the anomalies and the thermal history, which would enable us to discern if there are specific zones on the print plane behaving irregularly and to understand how hot spots might influence the mechanical properties of the printed part, given the fact that we have a functional knowledge of those phenomena. Section \ref{sec:fda} briefly introduces functional data analysis. Section \ref{sec:bvc} gives a detailed explanation of the Bagging Voronoi algorithm for geo-referenced functional data clustering, and Section \ref{sec:irradiance} presents a successful case study of the algorithm application.
 
 % Functional Data Analysis >>>
@@ -422,17 +419,6 @@ To conclude, it is noteworthy that spatial entropy is systematically higher near
 % Fatta revisione
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%>>> Application to PBF
-\section{Application to PBF}
-\label{sec:PBFApp}
-Moreover, in the case of additive manufacturing, it is possible to extend the domain of the algorithm to $\mathbb{R}^3$. Recall that in 3 dimension, Voronoi regions are represented as polyhedra, like in Fig. \ref{fig:3dvoronoi}. Next section presents a simulation study on simulated thermal profiles in 2D. 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.43]{Images/3D-Voronoi-tessellation-with-1000-grains-unit-cell-with-its-internal-grains-not.png}
-   \caption[3d Voronoi tessellation.]{An example of a Voronoi tesselation in 3d.}
-    \label{fig:3dvoronoi}
-\end{figure}
-% <<< End of Application to PBF
 
 %>>> Simulation Study
 %%%%%%%%%%%%%%
@@ -440,7 +426,7 @@ Moreover, in the case of additive manufacturing, it is possible to extend the do
 %vvvvvvvvvvvvv
 \section{Simulation Study}
 \label{sec:simstudy}
-The algorithm application for HS detection could lead to positive results. An experiment tested algorithm performances on simulated data. The simulated thermal profiles were obtained using the approach proposed in \cite{colosimo_spatially_2018} (2018) and \citeauthor{yan_real-time_2021} (2021). We can describe the intensity of each pixel in a spatial location $s$ at a certain frame $t$ with the sigmoid function described as
+In this section I want to take a little extra step on my thesis aim. As additional food for thought, this section briefly presents an example of the algorithm applied on simulated data. The purpose is to test in a controlled environment whether the algorithm could work and then move on to the real data collection phase. In addition, the experiment also wants to test the possibility of applying the algorithm described in the previous chapter in real-time context. The simulated thermal profiles were obtained using the approach proposed in \cite{colosimo_spatially_2018} (2018) and \citeauthor{yan_real-time_2021} (2021). We can describe the intensity of each pixel in a spatial location $s$ at a certain frame $t$ with a proper sigmoid function
 \begin{equation}
     \label{eq:simulation}
     a_{s, t}=\frac{255}{1+\exp (0.2(t-H \tau))}, t=1, \ldots, \tau
@@ -452,8 +438,56 @@ the parameter $\tau$ can be used to make the HS persistent $\tau$ frames, and th
    \caption[Simulated profiles.]{Different thermal profiles obtained by varying $\tau$ and $H$ parameters.}
     \label{fig:simulationprofile}
 \end{figure}
-A \numproduct{100 x 100} pixels grid was used during the experiment. As suggested in previous papers, cross-shaped clusters of pixels of varying sizes were inserted to simulate different HS sizes: small ($n=9$ pixels), medium ($n=20$ pixels), and large ($n=45$ pixels). The HSs were inserted in 100 different locations for each scenario. The parameter $\tau$ was varied for each size to test the algorithm's sensitivity. In addition, a random component was also added to each profile to simulate the noise present in real production settings.
-% ^^^^^^^^^^^^
-% REVIEW FATTA
-%%%%%%%%%%%%%%
+A \numproduct{50 x 50} pixels grid was used during the experiment. As suggested in previous papers, cross-shaped clusters of pixels of varying sizes were inserted to simulate different HS sizes: small ($n=9$ pixels), medium ($n=21$ pixels), and large ($n=45$ pixels). In each scenario, two medium size HSs were injected with different $\tau$. The persistence was randomly selected in the range $\tau\in (1,51)$. The HSs were inserted in random locations for. In addition, a random component $\varepsilon \sim \mathcal{N}(0, 1)$ was also added to each profile to simulate the noise present in real production settings.
+For the experiment, paramenters $n$ and $B$ were varied, while the first $p$ PCs were kept contributing to obtain a variance of the explained percentages of 95\%. Since we are evaluating the general performance of the algorithm and not its power in defect detection, the number of clusters was superimposed to $k=4$. The experiment was performed on a Thinkpad T14 with an AMD Ryzen Pro 5 processor and 16 GB of RAM. Fig. \ref{fig:time} shows the computational time to classify a frame according to different value parameters.
+\begin{figure}
+    \centering
+    \includegraphics[width = 0.5\textwidth]{Images/time.png}
+    \caption[Computational time of BVC on simulated data.]{Computational time needed to process a single frame according to different algorithm parameters. The plot was cut to $n=70$ for clarity.}
+    \label{fig:time}
+\end{figure}
+It seems obvious that it cannot be used for real-time applications. Presumably, implementing the algorithm in C or C++ would greatly improve performances mainly for two reasons: (i) the functions that generate random numbers in python are inefficient, and (ii) the low-level functions of C and C++ would allow the algorithm to be implemented by exploiting all processor cores by parallelizing bootstrap operations. Indeed, the algorithm by its very nature is particularly suited to be programmed using multi-threading logic. Fig. \ref{fig:frames} shows some frames of the simulated thermal profiles.
+\begin{figure}
+    \centering
+    \includegraphics[width = 0.6\textwidth]{Images/frames.png}
+    \caption[Frames of simulated data.]{Frames from simulated data of the second experiment.}
+    \label{fig:frames}
+\end{figure}
+To test the ability to correctly cluster observations, the correct classification rates defined as
+\begin{equation}
+    \label{eq:classrate}
+    \operatorname{CLASS} = \frac{\# correct classified}{\# Total}
+\end{equation}
+
+The problem with \ref{eq:classrate} is that it is strongly biased in this case: since the defects are very small relative to the domain, the large number of pixels in control will greatly affect the $\operatorname{CLASS}$.
+Therefore, to overcome this problem, it was decided to use the classification rate only on OOC pixels.
+Table \ref{tab:result} reports results for different parameter configurations. The standard deviation is shown in parentheses.
+
+\begin{table}[]
+\begin{tabular}{|llll|}
+\hline
+\rowcolor{bluepoli!40}\textbf{n} & \textbf{B} & \textbf{Class} & \textbf{Entropy} \\ \hline
+30         & 10         & 0.083(0.06)    & 0.108(0.033)     \\
+           & 40         & 0.083(0.06)    & 0.113(0.036)     \\
+           & 100        & 0.042(0.11)    & 0.125(0.045)     \\
+50         & 10         & 0.250(0.034)   & 0.077(0.026)     \\
+           & 40         & 0.250(0.038)   & 0.081(0.033)     \\
+           & 100        & 0.294(0.05)    & 0.094(0.028)     \\
+70         & 10         & 0.354(0.042)   & 0.047(0.019)     \\
+           & 40         & 0.332(0.054)   & 0.066(0.017)     \\
+           & 100        & 0.362(0.06)    & 0.067(0.016)     \\
+300        & 10         & 0.431(0.054)   & 0.027(0.005)     \\
+           & 40         & 0.444(0.06)    & 0.029(0.005)     \\
+           & 100        & 0.431(0.098)   & 0.033(0.007)     \\ \hline
+\end{tabular}
+\caption{$\operatorname{CLASS}$ and normalized entropy for different scenarios. Standard deviation is shown in parentheses.}
+\label{tab:result}
+\end{table}
+From the table, we can see that as $n$ changes, the $\operatorname{CLASS}$ changes considerably. This is because small values of $n$ tend to "hide" smaller defects. On the other hand, we can see that increasing $B$ does not significantly impact the mean, but slightly reduces the standard deviation.Thus, if we want to get a good $\operatorname{CLASS}$ we need to increase $n$, in a sense $n$ is a measure of how accurate we want to be in capturing even small defects, whereas $B$ is a measure of how sure we want to be about clustering. The results obtained are not excessively good, probably because $n$ is too small relative to the domain. Indeed, for $n=600$ and $B=100$ we begin to get acceptable results. Fig. \ref{fig:risultati} shows the result of frame classification in Fig. \ref{fig:frames}.
+\begin{figure}
+    \centering
+    \includegraphics[width = 0.7\textwidth]{Images/final_figure_1.png}
+    \caption[Bagging Voronoi Classificator maps.]{Cluster map and normalized entropy map obtained with $n=600$ and $B=30$.}
+    \label{fig:risultati}
+\end{figure}
 % <<< End of Simulation Study

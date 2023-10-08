@@ -1,4 +1,4 @@
-# MSc Thesis in Management Engineering 🎓
+#MSc Thesis in Management Engineering 🎓
 This is the repository for my MSc thesis @ POLIMI A.Y. 2022/2023.
 
 ```

@@ -1,4 +1,4 @@
-\setlength{\tabcolsep}{10pt}
+%\setlength{\tabcolsep}{10pt}
 This chapter comprehensively overviews powder bed fusion (PBF) processes in metal additive manufacturing. Section \ref{sec:pbf_proc} discusses how PBF printers for metal work, and Section \ref{sec:metalpowders} describes the powders used in those processes. Section \ref{sec:matterint} delves into the physical process that allows the selective fusion of metal powders into the finished product. Lastly, Section \ref{sec:examplesPBF} presents some applications for metal PBF processes.
 
 % Powder Bed Fusion Processes >>>
@@ -178,12 +178,12 @@ The equation describes the energy density of the laser beam
     \label{eq:energydensity}
     E_d = \frac{P}{h\cdot v \cdot d}
 \end{equation}
-where $E_d$ is the energy density (\unit{\joule/\milli\metre^3}), $P$ is the laser power (\unit{\watt}), $v$ is the laser scan speed (\unit{\milli\metre / \second}), $h$ is the hatch distance (\unit{\milli\metre}), $d$ is the layer thickness of the powder(\unit{\milli\metre}). For a more detailed description of heat transfer, please refer to the next section. The intensity of the laser beam's energy plays a crucial role in SLS because if it is not correctly calibrated, the final piece might exhibit porosities that compromise its mechanical features. Another critical parameter to consider during the SLS process is the duration of the laser pulse. As shown in Fig. \ref{fig:pulsipulsiocomepulsi}, a prolonged laser pulse results in a broad heat zone, causing a shock wave that leads to an increased debris formation during the interaction that can interfere with new layers.
+where $E_d$ is the energy density (\unit{\joule/\milli\metre^3}), $P$ is the laser power (\unit{\watt}), $v$ is the laser scan speed (\unit{\milli\metre / \second}), $h$ is the hatch distance (\unit{\milli\metre}), $d$ is the layer thickness of the powder(\unit{\milli\metre}). For a more detailed description of heat transfer, please refer to the next section. The intensity of the laser beam's energy plays a crucial role in SLS because if it is not correctly calibrated, the final piece might exhibit porosities that compromise its mechanical features. Another critical parameter to consider during the SLS process is the duration of the laser pulse. As shown in Fig. \ref{fig:pulsations}, a prolonged laser pulse results in a broad heat zone, causing a shock wave that leads to an increased debris formation during the interaction that can interfere with new layers.
 \begin{figure}
     \centering
     \includegraphics[scale=0.35]{Images/laserpulsing.png}
     \caption[Laser interactions with different pulses.]{Schematic of laser interaction with materials under different pulse duration: (a) long pulse duration and (b) short pulse duration and respective holes fabricated on a steel foil by (c-d) \cite{lin_femtosecond_2021}.}
-    \label{fig:pulsipulsiocomepulsi}
+    \label{fig:pulsations}
 \end{figure}
 For this reason, there has been a shift towards using ultra-short pulse lasers in recent years. These lasers are called "femtosecond lasers". They are also employed in precision processing or correction of semiconductors and liquid crystals, processing of transparent materials like glasses and sapphires, production of waveguide tubes for optical communication, and drilling of engine components for cars and aircraft, among other applications \cite{katayama_fundamentals_2020}. The high-frequency pulsation is achieved using a pulse stretcher, an amplifier, and a pulse compressor.
 \subsubsection{Heat transfer}
@@ -196,7 +196,6 @@ Heat and mass movement influence heat and mass-related events in SLS. Laser heat
 where $Q_L$, $Q_C$, $Q_{CV}$, and $Q_R$ are the laser heat flux quantity, conduction, convection, and radiation heat quantities. Recalling that only $Q_C$ will contribute to the melting process. Thus, some of the energy applied to the powder bed will be lost in the form of heat convection and radiation. \\
 To describe the heat conduction, we can use Fourier's law:
 \begin{equation}
-    \label{eq:nonsiecapitouncazzo}
     \frac{\delta}{\delta x}\left(k \frac{\delta T}{\delta x}\right)+\frac{\delta}{\delta y}\left(k \frac{\delta T}{\delta y}\right)+\frac{\delta}{\delta z}\left(k \frac{\delta T}{\delta z}\right)+\dot{q} =\rho C_p \frac{\delta T}{\delta t}
 \end{equation}
 where $T$ (\unit{\kelvin}) is the temperature, $k$ (\unit{\watt.\metre^{-1}.\kelvin^{-1}}) is the thermal conductivity, $\dot{q}$ (\unit{\watt.\metre^{-3}}) is the rate of which the heat is applied to the system, $r$ (\unit{\kilo\gram.\metre^{-3}}) is the material density, $C_p$ (\unit{\joule. \kilo\gram^{-1}.\kelvin^{-1}}) is the specific heat and $t$ (\unit{\second}) is the interaction time between laser beam and powder particles.
@@ -265,7 +264,7 @@ where $r$ is the distance between the charges $Q_1$ and $Q_2$ and $\varepsilon_0
     \caption[Backscattering of an electron at different angles.]{Montecarlo simulation for an aluminum specimen hit by an electron beam at different angles, \ang{0}, \ang{45}, \ang{60}, \ang{75} respectively \cite{goldstein_scanning_2018}. In red, backscattered electrons.}
     \label{fig:backscattering}
 \end{figure}
-Moreover, the backscattering effect is increased when the electron beam hits the metal surface at highly inclined angles. A fine and as spherical as possible powder is essential to reduce the backscattering effect caused by the incidence angle. In EBM processes, the more spherical the particles are, the more we can assume that the electron beam will strike the particle surface perpendicularly. We can see in Fig. \ref{fig:rotondette} why.
+Moreover, the backscattering effect is increased when the electron beam hits the metal surface at highly inclined angles. A fine and as spherical as possible powder is essential to reduce the backscattering effect caused by the incidence angle. In EBM processes, the more spherical the particles are, the more we can assume that the electron beam will strike the particle surface perpendicularly. We can see in Fig. \ref{fig:particles} why.
 \paragraph{Inelastic Interactions.} In inelastic interactions, the energy of the electrons diminishes. The energy released to the sample results in the heating of the metal and its corresponding melting. These interactions cause the release of certain emissions, detailed below \cite{krumeich_properties_2015, goldstein_scanning_2018}.
 \begin{itemize}
     \item \textbf{Inner-shell ionization :} the energy is passed to an inner electron, which ejects it from the atom. This results in an unstable atom configuration, leading to the release of X-rays or an Auger electron. X-rays are produced when an inner electron is released into the vacuum, and an electron from the valence shell descends to occupy the void left by the electron from a deeper level. On the other hand, an Auger electron is produced when the core electron, stimulated by the electron beam's energy, is expelled into the vacuum. Another electron from a higher level occupies the left space, which then radiates energy to a closer electron until it is released into the chamber. That is why, in an EBM 3D printer, it is crucial to have a shield to protect operators from X-rays.
@@ -279,7 +278,7 @@ Moreover, the backscattering effect is increased when the electron beam hits the
     \centering
     \includegraphics[scale=0.7]{Images/EBMparticles.png}
     \caption[Laser interactions and laser intensity.]{Electron beam interaction with spherical powder particles (a) \cite{tushar_ramkrishna_mahale_electron_2009}.}
-    \label{fig:rotondette}
+    \label{fig:particles}
 \end{figure}
 % <<< End of Energy Matter Interactions
 

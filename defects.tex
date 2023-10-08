@@ -1,4 +1,4 @@
-Like all industrial processes, Powder Bed Fusion (PBF) relies on process parameters control to ensure proper functioning. When a process shows the expected behavior, it is called an "in-control process". On the other hand, when the process deviates from the desired behavior, its output becomes unpredictable and is referred to as "out-of-control" (OOC). When a process is out of control, anomalies and defects can arise in the output. Section \ref{sec:defects} describes the most common defects in PBF processes and their causes, while Section \ref{sec:comelotrovo} presents different approaches for defect detection. Section \ref{sec:sensoriniiniini} reports an overview of available sensors used in anomaly detection.  Sections of this chapter are mainly based on \citeauthor{grasso_-process_2017} (2017), \citeauthor{grasso_process_2017} (2017), \citeauthor{mostafaei_defects_2022} (2022) and \citeauthor{wu_additively_2023} (2023). Finally, Section \ref{sec:hotspot} focuses on defects caused by anomalies in the temperature profiles of the building bed.
+Like all industrial processes, Powder Bed Fusion (PBF) relies on process parameters control to ensure proper functioning. When a process shows the expected behavior, it is called an "in-control process". On the other hand, when the process deviates from the desired behavior, its output becomes unpredictable and is referred to as "out-of-control" (OOC). When a process is out of control, anomalies and defects can arise in the output. Section \ref{sec:defects} describes the most common defects in PBF processes and their causes, while Section \ref{sec:monitoringdefect} presents different approaches for defect detection. Section \ref{sec:sensors} reports an overview of available sensors used in anomaly detection.  Sections of this chapter are mainly based on \citeauthor{grasso_-process_2017} (2017), \citeauthor{grasso_process_2017} (2017), \citeauthor{mostafaei_defects_2022} (2022) and \citeauthor{wu_additively_2023} (2023). Finally, Section \ref{sec:hotspot} focuses on defects caused by anomalies in the temperature profiles of the building bed.
 
 % Categories of Defect in PBF Processes >>>
 \section{Defects Categories in PBF Processes}
@@ -74,13 +74,12 @@ Processing conditions determine the surface's texture, the perimeter scanning te
 
 % >>> Defects Monitoring Methods
 \section{Defects Monitoring Methods}
-\label{sec:comelotrovo}
+\label{sec:monitoringdefect}
 In recent years, thanks to advancements in both available computational power at lower cost and rising technology of sensors, quality control has evolved into an increasingly complex and sophisticated process. In AM, we can collect huge amounts of data with remarkable granularity due to the layer-wise production process. This section outlines the various approaches to quality control, providing a terminology framework as established in \citeauthor{richard_leach_integrated_2020} (2020) and \citeauthor{grasso_-situ_2021} (2021).
 \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{Images/dovevai.png}
+    \includegraphics[width=0.6\textwidth]{Images/qcframework.png}
     \caption[Measurement and monitoring techniques.]{Graphical representation of different terms associated with measurement and monitoring techniques \cite{richard_leach_integrated_2020}.}
-    \label{fig:dovevai}
 \end{figure}
 \emph{In-process} methods involve measuring data during or between consecutive production phases within the same manufacturing chain. These measurements are synchronized with the different stages of the manufacturing process, thus allowing monitoring them synergetically. When in-process measurements are executed immediately before, after, or amidst manufacturing points, they are called \emph{in-line} measurements. These are measured on distinct measurement systems along the standard production line, where manufacturing is not occurring. Consequently, they fall under off-machine measurements. \emph{Off-machine} measurements are taken outside the machine where the manufacturing process occurs. On the other hand, if measurements taken during the process use sensors mounted on the production machine, they are labeled \emph{on-machine} measurements. Those that principally collect data directly from the manufacturing site are called \emph{in-situ} measurements. In AM processes, in-situ predominantly denotes sensing and surveillance techniques aiming to capture details about process stability and product quality during manufacturing. Data from this last method are particularly significant as they are collected close to the final product, thus carrying out much information. When monitoring systems are not "in-process", they are labeled as off-line or \emph{"ex-situ"}. They are categorized as off-machine measurements, usually executed outside the core manufacturing setup, perhaps in a separate measurement station or a lab. Within the domain of in-situ measurements, there is a slight difference between "in-situ measurement" and "in-situ monitoring". The former implies the capability of in-situ sensors to gather aspects, aiming to understand the process or assess the product's quality attributes during production. The latter alludes to the real-time identification of discrepancies, anomalies, and OOC process conditions. They often require establishing an alert system or classification algorithm. Furthermore, considering "in-situ" measurements, depending on the measured process signature, we can distinguish five different monitoring levels \cite{grasso_-situ_2021, grasso_process_2017}. These levels are "observable signatures" only, i.e., measurable quantity. "Derived signatures" also exist. These are quantities estimated via process modeling but are beyond the scope of this thesis. Fig. \ref{fig:levels} shows levels for observable signatures.
 \begin{figure}
@@ -103,8 +102,8 @@ In recent years, thanks to advancements in both available computational power at
 %%%%%
 
 \section{Sensors for Defect Detection}
-\label{sec:sensoriniiniini}
-Each level described in Section \ref{sec:comelotrovo} involves different sensor typologies. This section describes the most widely employed sensors for in-situ process monitoring and measurement in AM. 
+\label{sec:sensors}
+Each level described in Section \ref{sec:monitoringdefect} involves different sensor typologies. This section describes the most widely employed sensors for in-situ process monitoring and measurement in AM. 
 
 In \emph{level 0}, we can use embedded sensors integrated within the printer. These process signatures are particularly suitable in EB-PBF applications since many embedded systems are already mounted on EBM printers. Embedded sensor signals in EB-PBF are also known as "log signals". Publications proposed a more advanced in-process use of signals from such sensors only in EB-PBF applications as a possible source of information for in-situ anomaly detection as in \citeauthor{grasso_data_2018} (2018) and \citeauthor{steed_falcon_2017} (2017). The same publications pointed out that many of these EB-PBF log signals are correlated with process errors and variations in process conditions. \citeauthor{steed_falcon_2017} (2017) proposed a software tool for the visualization and analysis of significant multivariate time series log signals called Falcon. 
 
@@ -115,7 +114,7 @@ In \emph{level 1}, i.e., measurement and characterization of layer properties, w
         \includegraphics[scale=0.3]{Images/off axial laser.png}
     }
     \qquad
-    \subfloat[\label{fig:fig:offaxialebm}]{
+    \subfloat[\label{fig:offaxialebm}]{
         \includegraphics[scale=0.3]{Images/off axial EBM.png}
     }
     \\
@@ -129,7 +128,7 @@ In \emph{level 1}, i.e., measurement and characterization of layer properties, w
     \caption[Monitoring systems configurations and optical tomography examples.]{Example of off-axis sensing architectures in SLS (a) and EBM (b) \cite{colosimo_-machine_2020}, and examples of optical tomography images for cubic samples with a variation of energy density (c) and a cylinder produced under shielding gas flow variation (d)\cite{bamberg_-process_2016}.}
 \end{figure}
 
-\paragraph{Off-Axis Sensing.} In both SLS and EBM, off-axis sensing is suitable for gathering information. Conventional cameras operating in the visible range are usually employed in L-PBF (Fig. \ref{fig:offaxiallaser}), while the high temperatures in EBM and the difficulty of installing additional sensors on EB-PBF machines (Fig. \ref{fig:fig:offaxialebm}), makes their usage more challenging. The off-axis optical camera within the visible range has a significant drawback: numerous publications such as \citealt{kleszczynski_error_2012} (2012) and \citeauthor{foster_bk_optical_2015} (2015) have shown how appropriate illumination condition significantly impacts the camera's acquired result. Both the surface pattern of the printed slice and the powder bed, as well as the contrast between the background (powder) and foreground (printed slice) areas, are influenced by the intensity, nature, and relative angle of the illumination source. Hence, non-uniform illumination conditions may mask some anomalies and require some post-acquisition operations that might be challenging. The relative angle between the camera and the illumination source is also relevant in this measurement, as shown in  \citeauthor{caltanissetta_characterization_2018} (2018). Moreover, we must correct the distorted perspective given by the camera's positioning through specific geometric adjustment transformation before analysis. In addition to traditional cameras, those operating in the NIR/IR range can monitor level 1 process signatures. They are particularly suitable in EBM processes due to the high temperatures encountered during printing. Fig. \ref{fig:quadratoir} and Fig. \ref{fig:cilindroir} show two examples of acquired images. 
+\paragraph{Off-Axis Sensing.} In both SLS and EBM, off-axis sensing is suitable for gathering information. Conventional cameras operating in the visible range are usually employed in L-PBF (Fig. \ref{fig:offaxiallaser}), while the high temperatures in EBM and the difficulty of installing additional sensors on EB-PBF machines (Fig. \ref{fig:offaxialebm}), makes their usage more challenging. The off-axis optical camera within the visible range has a significant drawback: numerous publications such as \citealt{kleszczynski_error_2012} (2012) and \citeauthor{foster_bk_optical_2015} (2015) have shown how appropriate illumination condition significantly impacts the camera's acquired result. Both the surface pattern of the printed slice and the powder bed, as well as the contrast between the background (powder) and foreground (printed slice) areas, are influenced by the intensity, nature, and relative angle of the illumination source. Hence, non-uniform illumination conditions may mask some anomalies and require some post-acquisition operations that might be challenging. The relative angle between the camera and the illumination source is also relevant in this measurement, as shown in  \citeauthor{caltanissetta_characterization_2018} (2018). Moreover, we must correct the distorted perspective given by the camera's positioning through specific geometric adjustment transformation before analysis. In addition to traditional cameras, those operating in the NIR/IR range can monitor level 1 process signatures. They are particularly suitable in EBM processes due to the high temperatures encountered during printing. Fig. \ref{fig:quadratoir} and Fig. \ref{fig:cilindroir} show two examples of acquired images. 
 \begin{figure}
     \centering
     \subfloat[\label{fig:fringesetup}]{
@@ -204,8 +203,8 @@ The melt pool carries much information since it is the phenomenon with the highe
 \paragraph{Spatially resolved methods.} Co-axial video imaging techniques can obtain more detailed insights into the melt pool's attributes and consistency over time. Commonly, a high-speed camera (\numrange{1000}{50000} \unit{fps}) paired with a narrow-band NIR filter is utilized to maximize the dynamic range and record the primary melt pool emissions. In some cases, it is also possible to use off-axis video imaging methods, using high-magnification optics combined with a limited field of view. In \citeauthor{lane_measurements_2020} (2020), the authors employed an off-axis high-speed camera paired with a mirror, facilitating an up-close examination of the melt pool without interfering with the laser beam. They achieved a spatial resolution \SI{3}{\micro\metre / pixel}. In the same paper, the authors also used a thermal camera for melt pool thermography and achieved a lower resolution of \SI{36}{\micro \metre / pixel}.
 \begin{figure}
     \centering
-    \subfloat[\label{fig:colorini}]{
-        \includegraphics[scale=0.12]{Images/colorini.png}
+    \subfloat[\label{fig:thermo}]{
+        \includegraphics[scale=0.12]{Images/thermal_color.png}
     }
     \qquad
     \subfloat[\label{fig:spectrograrphy}]{
@@ -288,14 +287,14 @@ This defect characterized by anomalous area temperature profiles is known as a h
     \item \textbf{High surface roughness:} overheated areas can lead to melting unwanted areas of powder, and partially melted powder particles attach to the surface. This will result in small melted powder on the surface of the final object, thus increasing its roughness;
     \item \textbf{Change in material microstructure:} normal melting zones are characterized by a high cooling rate that leads to finer grain formation, while overheating regions tend to develop a coarser microstructure due to the slower cooling transient;
     \item \textbf{Porosity formation:} if the region is already hot, new laser scans may lead to material vaporization. Hence, unstable keyhole formation is often correlated with porosity defects.
-\end{itemize} An example of defects generated by hot-spot can be seen in Fig. \ref{fig:cane}.
+\end{itemize} An example of defects generated by hot-spot can be seen in Fig. \ref{fig:printedhs}.
 \begin{figure}
     \centering
-    \subfloat[\label{fig:dio}]{
+    \subfloat[\label{fig:modehs}]{
         \includegraphics[scale=0.45]{Images/modehs.png}
     }
     \qquad
-    \subfloat[\label{fig:cane}]{
+    \subfloat[\label{fig:printedhs}]{
         \includegraphics[scale=0.4]{Images/printedhs.png}
     }
     \caption[Examples of hot spot defects.]{Examples of a complex shape CAD model with the position of the observed hot spot (a) and relative observed defects in printed part (b) \cite{grasso_-process_2017}.}

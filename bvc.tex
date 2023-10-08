@@ -5,10 +5,10 @@ This chapter presents a novel approach proposed by the author for clustering bui
 \label{sec:fda}
 This section discusses Functional Data Analysis (FDA) and Functional Principal Component Analysis (FPCA). It provides a brief overview to give readers the foundational knowledge needed to understand the algorithm described in Section \ref{sec:bvc}. This section is based mainly on \citeauthor{ramsay_functional_2006} (2006) and \citeauthor{ramsay_functional_2009} (2009).
 
-Functional data are measurable observations of a given phenomenon that we can assume, with a fair degree of certainty, that a function can describe it. Indeed, although each observation is a single discrete value, these values reflect the smooth behavior of the generative function of those data. Fig. \ref{fig:bambine} shows the height data in \unit{\centi\metre} of 10 girls measured at 31 different temporal instants in the Berkeley Growth Study. We can see the smooth behavior typical of analytic functions, suggesting a "height" function, relating height to girls' age. Like all mathematical functions, the height function has interesting properties, including continuity and the possibility to compute function derivatives. Indeed, we can calculate the first derivative of the height function and interpret it as the growth velocity. Similarly, we can calculate the second derivative, the growth acceleration, as Fig. \ref{fig:accelerazione} shows.
+Functional data are measurable observations of a given phenomenon that we can assume, with a fair degree of certainty, that a function can describe it. Indeed, although each observation is a single discrete value, these values reflect the smooth behavior of the generative function of those data. Fig. \ref{fig:altezzabambine} shows the height data in \unit{\centi\metre} of 10 girls measured at 31 different temporal instants in the Berkeley Growth Study. We can see the smooth behavior typical of analytic functions, suggesting a "height" function, relating height to girls' age. Like all mathematical functions, the height function has interesting properties, including continuity and the possibility to compute function derivatives. Indeed, we can calculate the first derivative of the height function and interpret it as the growth velocity. Similarly, we can calculate the second derivative, the growth acceleration, as Fig. \ref{fig:accelerazione} shows.
 \begin{figure}
     \centering
-    \subfloat[\label{fig:bambine}]{
+    \subfloat[\label{fig:altezzabambine}]{
         \includegraphics[scale=0.28]{Images/crescita.png}
     }
     \qquad
@@ -16,9 +16,9 @@ Functional data are measurable observations of a given phenomenon that we can as
         \includegraphics[scale=0.28]{Images/accelerazione.png}
     }
     \caption[Functional data]{The heights of 10 girls measured at 31 ages (a) and their estimated accelerations (b) \cite{ramsay_functional_2006}. The dotted line is the cross-sectional mean acceleration.}
-    \label{fig:tuttoinsieme}
+    \label{fig:crescitaacc}
 \end{figure}
-Even if the height observations are taken nominally at the same age for each girl, it is not strictly needed. Indeed, the points at which the function is observed may change from one subject to another. It can be helpful in quality control that relies on sensors we discussed in Section \ref{sec:sensoriniiniini} to deal with missing values due, for example, to the obstruction of the off-axis sensor by the recoating blade. Furthermore, the signals transmitted by these sensors may be affected by disturbances that prevent the observed quantity from being correctly measured, causing discontinuities or missing values. It is also important to note that the FDA does not suffer from the problems of classical multivariate methods. It can also be used when the number of variables $p$ is larger than the available sample size $n$. In the case of Fig. \ref{fig:tuttoinsieme}, we have $p=31$ and $n=10$. In general, the goal of the FDA is to represent data as functions, to provide a representation that helps to analyze and highlight various characteristics of the collected data. This allows us to explain patterns of variation in the data and compare data containing different sets of observations of the same function or functions for a standard set of replicates. We can write each functional observation as the sum of a functional component and a random component that we will call noise. Formally, we can write every observed profile $y_j$ as 
+Even if the height observations are taken nominally at the same age for each girl, it is not strictly needed. Indeed, the points at which the function is observed may change from one subject to another. It can be helpful in quality control that relies on sensors we discussed in Section \ref{sec:sensors} to deal with missing values due, for example, to the obstruction of the off-axis sensor by the recoating blade. Furthermore, the signals transmitted by these sensors may be affected by disturbances that prevent the observed quantity from being correctly measured, causing discontinuities or missing values. It is also important to note that the FDA does not suffer from the problems of classical multivariate methods. It can also be used when the number of variables $p$ is larger than the available sample size $n$. In the case of Fig. \ref{fig:crescitaacc}, we have $p=31$ and $n=10$. In general, the goal of the FDA is to represent data as functions, to provide a representation that helps to analyze and highlight various characteristics of the collected data. This allows us to explain patterns of variation in the data and compare data containing different sets of observations of the same function or functions for a standard set of replicates. We can write each functional observation as the sum of a functional component and a random component that we will call noise. Formally, we can write every observed profile $y_j$ as 
 \begin{equation}
     y_j = f(t_j) + \varepsilon_j \qquad \varepsilon_j\sim N(0, \sigma_j^2)
 \end{equation}
@@ -159,7 +159,7 @@ Finally, the estimated coefficient vector $\hat{\mathbf{c}}$ will be
 \end{equation}
 and thus the data-fitting vector $\mathbf{\hat{y}}$ is
 \begin{equation}
-    \label{eq:unbelcasino}
+    \label{eq:fittingvector}
     \hat{\mathbf{y}}=\boldsymbol{\Phi}\left(\boldsymbol{\Phi}^{\prime} \mathbf{W} \boldsymbol{\Phi}+\lambda \mathbf{R}\right)^{-1} \boldsymbol{\Phi}^{\prime} \mathbf{W} \mathbf{y}=\mathbf{S}_{\phi, \lambda} \mathbf{y}
 \end{equation}
 
@@ -195,7 +195,7 @@ where $df(\lambda)$ are the degrees of freedom value for the spline smooth and a
 \begin{equation}
    df(\lambda)=\operatorname{trace} \mathbf{S}_{\phi, \lambda}
 \end{equation}
-and $\mathbf{S}_{\phi, \lambda}$ is defined in \ref{eq:unbelcasino}.
+and $\mathbf{S}_{\phi, \lambda}$ is defined in \ref{eq:fittingvector}.
 
 \subsection{Functional Principal Component Analysis}
 Functional principal component analysis (FPCA), which is nothing other than PCA applied to functional data, is one of the most used technique when dealing with functional data. Indeed, it is a common practice to look for features that characterize typical functions profile. For example, we might be interested in the sinusoidal nature of periodic data \cite{ramsay_functional_2006}. When we talked about classical PCA, the linear combination consisted of a vector of weights and the observations of the dataset. In the case of FPCA we have to translate this approach into the domain of functions, thus, into the domain of the "continuum". Equation \ref{eq:pcaf} becomes
@@ -325,100 +325,6 @@ To conclude, it is noteworthy that spatial entropy is systematically higher near
     \caption[Classification of irradiance data.]{In the top panels, final classification maps are obtained via a majority vote on frequencies of assignment and by setting $K = 5$ (left) or $K = 6$ (right).In the bottom panels, a set of functional local representatives obtained with $n = 500$ in one of the iterations of the algorithm and clustered with $K = 5$ (left) and $K=6$ (right). From \citeauthor{secchi_bagging_2013} \citeyear{secchi_bagging_2013}.}
     \label{fig:resbagging}
 \end{figure}
-
-%\subsection{Analysis of Spatio-Temporal Mobile Phone Data in Milan}
-% \label{subsec:mobilephonemilan}
-% I have chosen to present this example to illustrate to the reader the flexibility of the previously discussed algorithm. It demonstrates how the method can adapt to different data dimensionality reduction techniques and how a Fourier basis can represent functional data exhibiting certain seasonality, as with lattice structures in Section. \ref{subsec:devcell}.
-% In \citeauthor{secchi_analysis_2015} \citeyear{secchi_analysis_2015}, authors examined high-dimensional, geo-referenced mobile phone usage data from Milan's urban area to discern activity patterns within the city over time. The goal was to identify specific urban zones with similar temporal patterns, which could indicate specific activities or events in those areas. To achieve the goal, they decided to use the algorithm explained in Section \ref{sec:bvc} coupled with treelet analysis (I'll explain it in just a moment). 
-% The data available for analysis are from Telecom Italia. In this dataset, the metropolitan city of Milan is divided into a uniform lattice $\mathcal{S}_0$ consisting of 97x109 sites. In each location, the average number of mobile phones simultaneously using the network for calling is provided every 15 minutes over 14 days.
-
-% %%%%% Grammarly eseguito sul testo qua sopra ^^^
-
-
-% This quantity is called Erlang and it is defined as
-% \begin{equation}
-%     \label{eq:erlang}
-%     E_{\mathbf{x}j}=\frac{1}{15}\sum_{q=1}^Q \left| T_{\mathbf{x}j}^q \right|
-% \end{equation}
-% where $T_{\mathbf{x}j}^q$ indicates the time interval in which the $q$-th mobile phone is using the network for calling while moving within site $\mathbf{x}$ and during the $j$-th quarter of an hour. The Erlang data was recorded every quarter of an hour, from March 18th, 2009, 00:15, till March 31st, 2009, 23:45. Fig. \ref{fig:secchino} there is an example of an Erlang profile.
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[scale=0.43]{Images/secchierlang.png}
-%     \caption[Erlang profile.]{Erlang profile for a site in the lattice $\mathcal{S}_0$ \cite{secchi_analysis_2015}.}
-%     \label{fig:secchino}
-% \end{figure}
-% However, for some sites of the lattice, Erlang profiles had some missing values, and in some instances, they were entirely missing. Therefore, after the data cleaning phase, the authors decided to focus only on a non-uniform time grid of $p = 1,308$ elements, each element of the time grid being relative to a quarter of an hour for which an Erlang measurement has been observed in at least one site of the lattice. In Algorithm \ref{alg:bvc} for dimensional reduction of functional data, FPCA was suggested. While FPCA stands as an effective technique for identifying optimal subspaces to represent data, it has a limitation in its global approach, making it less appropriate for multi-resolution analysis. This is primarily because its basis elements typically involve a linear combination of all foundational variables. So, authors decided to use a treelet basis, introduced in \citeauthor{lee_treeletsadaptive_2008} (2008). For this specific case, since the data exhibits an evident seasonality, authors decided to use a Fourier basis with a period equal to 1 week. Thus, the reconstructed functional form of the Erlang profile for site $\textbf{x} \in \mathcal{S}_0$ is a function $E_{\textbf{x}(t)}$ such that:
-% \begin{equation}
-%     E_{\textbf{x}}(t)=\frac{c_0^{\textbf{x}}}{2} + \sum_{h=1}^H \left[a_h^{\textbf{x}}\cos \left( h\omega t\right) + b_h^{\textbf{x}}\cos \left( h\omega t\right) \right]
-% \end{equation}
-% where $t \in \left[ 0; T\right]$, $\omega = 2\pi/T$ and $T=60 \times 24 \times 7$ is the period expressed in minutes. To choose the optimal basis dimension $H$, we can use the power spectrum associated to the site~-~wise smoothing of the Erlang data with a Fourier basis of large dimension $H = 200$. The power spectrum of the Fourier expansion of a signal represents the amplitude of the signal as a function of the frequency, and at the $h$-th frequency it is related to the amplitude of the $h$-th harmonic
-
-% \begin{equation}
-%     \label{eq:spectrum}
-%     P_{\mathbf{x}}(h)=\sqrt{(a^{\mathbf{x}}_h)^2 + (a^{\mathbf{x}}_h)^2}
-% \end{equation}
-
-% Thus, the more the $h$-th harmonic is relevant in the explanation of features occurring in the data, the more $P_{\mathbf{x}}(h)$ will be large. From the spectrum in Fig. \ref{fig:fantasmino}, we can see that local maximum happening at multiple of 7 (the dotted lines), while for $H >100\omega$, power spectre becomes almost negligible.
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[scale=0.6]{Images/fantasmino.png}
-%     \caption[Spectrum of Erlang data.]{Average power spectrum $P(h)$ obtained via site-wise smoothing of the Erlang measures with a Fourier basis of dimension $H = 200$. Only the values of $P(h)$ for$ h = 1, \dots, 100$ are shown in the plot. Dotted vertical lines are drawn for multiples of 7 \cite{secchi_analysis_2015}.}
-%     \label{fig:fantasmino}
-% \end{figure}
-
-% As did in Section , the metric $d(\cdot, \cdot)$ used is Euclidean distance, the total number of bootstrap $B=50$, and the dimension $n$ of the Voronoi tessellation ranging from 50 to 1250. As we already know, the optimal $n$ will be found by using the scree plot.
-
-
-% \subsection{One Last Thing}
-% \label{subsec:devcell}
-% In previous section, I have chosen to provide an example of how functional data and clustering algorithms can be used to conduct a layer-wise temperature profile analysis. However, these concepts can be readily adapted to other scenarios, including, for instance, particular application in three dimensions. In this section, I want to go beyond the primary domain of the thesis. I want to suggest how the algorithm could also be leveraged for the classification of functional data in three dimensions. A possible application in three dimensions could be the clustering of functional data regarding the deviation of cell profiles in lattice structures. Recall that in 3 dimension, Voronoi regions are represented as polyhedra, like in Fig. \ref{fig:3dvoronoi}.
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[scale=0.43]{Images/3D-Voronoi-tessellation-with-1000-grains-unit-cell-with-its-internal-grains-not.png}
-%     \caption[3d Voronoi tessellation.]{An example of a Voronoi tesselation in 3d.}
-%     \label{fig:3dvoronoi}
-% \end{figure}
-
-% In \citeauthor{colosimo_complex_2022} (2022), the authors aim to compare the nominal slices with the actual slices measured through x-ray computed tomography of a lattice structure composed of 64 dodecahedron unit cells of size \SI{10}{\milli\metre} within a specimen of $40 \times 40 \times 40$ \unit{\milli\metre}. Subsequntely, the 2D image of the as-built single cell and as-designed one were compared, slice by slice, in order to compute the deviation index. Given a pair of images that correspond to the $z-$th slice of the as-designed cell and the $z-$th slice of the as-built cell, let $i_{u,v,z}(\text{as.designed}$ and let $i_{u,v,z}(\text{as.build}$ be the intensities of $(u,v)^{th}$ pixel in the as-designed slice and in the as-built slice, respectively. In Fig. \ref{fig:slices} there are some examples of the procedure. A superimposition of these two images leads to four possible cases:
-% \begin{itemize}
-%     \item Region 1: pixels in which both $i_{u,v,z}(\text{as.designed})=0$ and $i_{u,v,z}(\text{as.build})=0$, i.e., pixels where material is present in both the images.
-%     \item Region 2: pixels in which both $i_{u,v,z}(\text{as.designed})=1$ and $i_{u,v,z}(\text{as.build})=1$, i.e., pixels that correspond to the background in both the images.
-%     \item Region 3: pixels in which both $i_{u,v,z}(\text{as.designed})=0$ and $i_{u,v,z}(\text{as.build})=1$, i.e., pixels where material is present in the as-designed slice but not in the as-built slice (i.e., less material has been produced than indicated in the CAD model)
-%     \item Region 4: pixels in which both $i_{u,v,z}(\text{as.designed})=1$ and $i_{u,v,z}(\text{as.build})=0$, i.e. pixels where material is present in the as-built slice but not in the as-designed slice (i.e., more material has been produced than indicated in to the CAD model).
-% \end{itemize}
-
-
-% \begin{figure}
-%     \centering
-%     \includegraphics[scale=0.5]{Images/slicescolosimo.png}
-%     \caption[Deviation index.]{Example of as-built (top row) and as-designed (central row) slice images at different z heights with the corresponding deviation (bottom row) \cite{colosimo_complex_2022}. }
-%     \label{fig:slices}
-% \end{figure}
-
-
-% The overall number of pixels that belong to the union of region 3 or region 4 is the number of pixels for which $i_{u,v,z}(\text{as.build}) - i_{u,v,z}(\text{as.designed}) \neq 0$. So the \emph{deviation index} for the cell $(i,j,k)$ is defined as
-% \begin{equation}
-% \label{eq:deviationindex}
-% \delta_{i, j, k}(z)= \sum_{u=1}^p \sum_{v=1}^p \mathcal{I}\left(i_{u, v, z}(\text { as.built })\right. -i_{u, v, z}(\text { as.designed })\neq 0)_{i, j, k},
-% \end{equation}
-% where $\mathcal{I}$ is the indicator function, that is 1 if the condition in brackets is true and 0 otherwise.
-% After calculating the deviation index for each cell, the authors suggest using a cubic B-splines basis to fit a functional profile on the deviation index as a function of the slice position along cell z-axis. The position of the knots was chosen to eliminate the first and second discontinuity present in the deviation profiles, resulting from the typical trabecular structure of lattice designs. Fixed knots were then placed at the discontinuities of the as-designed geometry. Subsequently, intermediate knots were added iteratively, until a knee in the mean squared error (MSE) scree plot of the B-spline model residuals was identified.
-% At the conclusion of step 5 in Fig. \ref{fig:colosimofunctional}, as outlined in the article, we will have 64 functional profiles, one for each cell. These profiles and the centroid of each cell in a lattice in $\mathbb{R}^3$ and will be the input for the classification algorithm described in Section \ref{sec:bvc}. In doing so, we could identify if there are critical areas within the lattice where cells exhibit similar anomalous behavior. Coupled with the ability to quantify the magnitude of the defect using the functional profiles, this could lead to a deeper understanding of the lattice structure's behavior and determine whether, despite its imperfections, it remains fit for its intended use. Indeed, localized geometric and dimensional deviations of the unit cells might adversely affect the structure's elastic modulus and compressive strength \cite{colosimo_complex_2022}.
-
-% \begin{figure}
-%     \centering
-%     \includegraphics[scale=0.5]{Images/colosimosplines.png}
-%     \caption[Functional control chart in complex geometries.]{Schema of the proposed methodology in \cite{colosimo_complex_2022}. The output of step 5 would be the input for the classification algorithm.}
-%     \label{fig:colosimofunctional}
-% \end{figure}
-% % <<< End of Succesful case of the algorithm
-
-% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-% Fatta revisione
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %>>> Simulation Study
 \section{Simulation Study}
